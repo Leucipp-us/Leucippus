@@ -15,6 +15,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.image.BufferedImage;
 import java.awt.MenuBar;
 import java.awt.Menu;
+import java.awt.MenuItem;
 
 import java.io.File;
 import java.io.BufferedWriter;
@@ -67,62 +68,26 @@ public class Plugin_Frame extends PlugInFrame {
 		});
 
 		comm = new Communicator(drawHandler);
-		(new Thread(comm)).start();
 		show();
+	}
 
+	public void run(String arg) {
+		(new Thread(comm)).start();
 	}
 
 	private void setup() {
 		setLayout(new GridBagLayout());
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 0.5;
-
-		JButton selectPointButton = new JButton("Select Point");
-		c.gridx = 0;
-		c.gridy = 0;
-		add(selectPointButton, c);
-
-		JButton selectLineButton = new JButton("Select Line");
-		c.gridx = 1;
-		c.gridy = 0;
-		add(selectLineButton, c);
-
-        JButton recalculatePointsButton = new JButton("Calculate Detections");
-        c.gridx = 0;
-        c.gridy = 1;
-        c.gridwidth = 2;
-        add(recalculatePointsButton, c);
 
 		JButton removeItemButton = new JButton("Remove Item");
 		c.gridx = 0;
 		c.gridy = 3;
 		add(removeItemButton, c);
 
-		JButton saveAnnotationsFile = new JButton("Save Annotations");
-		c.gridx = 0;
-		c.gridy = 4;
-		c.gridwidth = 1;
-		add(saveAnnotationsFile, c);
-
-		JButton saveImage = new JButton("Save Current Image");
-		c.gridx = 1;
-		c.gridy = 4;
-		add(saveImage, c);
-
-		selectPointButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                createPointDialog();
-            }
-        });
-
-        selectLineButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                createLineDialog();
-                
-            }
-        });
-
+		
 		removeItemButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
@@ -136,6 +101,7 @@ public class Plugin_Frame extends PlugInFrame {
             }
         });
 
+		/*
         saveImage.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 				String filepath = createFileSaveDialog();
@@ -178,7 +144,7 @@ public class Plugin_Frame extends PlugInFrame {
         			} catch (Exception ex) {
         				System.out.println(ex.toString());
         			} finally {
-					   try {writer.close();} catch (Exception ex) {/*ignore*/}
+					   try {writer.close();} catch (Exception ex) {}
 					}
         		}
         	}
@@ -190,8 +156,85 @@ public class Plugin_Frame extends PlugInFrame {
             							pointList,
             							lineList);
             }
-        });
+        });*/
 
+        Menu t;
+        Menu tt;
+        MenuItem mi;
+        menuBar = new MenuBar();
+        t = new Menu("File");
+
+        mi = new MenuItem("Save Annotations");
+        t.add(mi);
+
+        tt = new Menu("Save Detections");
+        mi = new MenuItem("as pdb");
+        tt.add(mi);
+        mi = new MenuItem("as cif");
+        tt.add(mi);
+        mi = new MenuItem("as xyz");
+        tt.add(mi);
+        t.add(tt);
+
+
+        mi = new MenuItem("Exit");
+        mi.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		close();
+        	}
+        });
+        t.add(mi);
+        menuBar.add(t);
+
+        t = new Menu("Edit");
+        menuBar.add(t);
+
+        t = new Menu("Insert");
+        tt = new Menu("Points");
+        mi = new MenuItem("Missing Point");
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                createPointDialog(PointType.MISSING_ATOM);
+            }
+        });
+        tt.add(mi);
+
+        mi = new MenuItem("Incorrect Point");
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                createPointDialog(PointType.INCORRECT_ATOM);
+            }
+        });
+        tt.add(mi);
+        t.add(tt);
+
+        tt = new Menu("Lines");
+        mi = new MenuItem("BondLength");
+        mi.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		createLineDialog(LineType.BONDLENGTH);
+        	}
+        });
+        tt.add(mi);
+        t.add(tt);
+        menuBar.add(t);
+
+        t = new Menu("Detect");
+        t.add("Without User Input");
+        t.add("With BondLengths");
+        t.add("With Marked Points");
+
+        mi = new MenuItem("With All User Input");
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
+            							pointList,
+            							lineList);
+            }
+        });
+        t.add(mi);
+        menuBar.add(t);
+		setMenuBar(menuBar);
 		setupLists(c);
 	}
 
@@ -215,22 +258,18 @@ public class Plugin_Frame extends PlugInFrame {
 
 	}
 
-	private void createPointDialog() {
+	private void createPointDialog(PointType pt) {
 		Roi roi = imp.getRoi();
 		if (roi == null || roi.getType() != 10)
 			return;//A popup should come up instead of the return
 
 		JTextField name = new JTextField();
-		JComboBox<PointType> pointType = new JComboBox<PointType>(PointType.values());
 		final JComponent[] inputs = new JComponent[] {
 				new JLabel("Name"),
-				name,
-				new JLabel("Type"),
-				pointType
+				name
 		};
 		int n = JOptionPane.showConfirmDialog(null, inputs, "Add Point", JOptionPane.YES_NO_OPTION);
 		if (n == JOptionPane.YES_OPTION) {
-			PointType pt = (PointType)pointType.getSelectedItem();
 			DrawableItem dPoint = new DrawablePoint(
 												name.getText(),
 												roi.getXBase(),
@@ -242,7 +281,7 @@ public class Plugin_Frame extends PlugInFrame {
 		} 
 	}
 
-	private void createLineDialog() {
+	private void createLineDialog(LineType lt) {
 		Roi roi = imp.getRoi();
 		
 		if (roi == null || !roi.isLine())
@@ -253,12 +292,9 @@ public class Plugin_Frame extends PlugInFrame {
 		JTextField name = new JTextField();
 		JTextField atom1 = new JTextField();
 		JTextField atom2 = new JTextField();
-		JComboBox<LineType> lineType = new JComboBox<LineType>(LineType.values());
 		final JComponent[] inputs = new JComponent[] {
 			new JLabel("Name"),
 			name,
-			new JLabel("Type"),
-			lineType,
 			new JLabel("(For BondLengths)"),
 			new JLabel("Atom 1"),
 			atom1,
@@ -268,7 +304,6 @@ public class Plugin_Frame extends PlugInFrame {
 
 		int n = JOptionPane.showConfirmDialog(null, inputs, "Add Line", JOptionPane.YES_NO_OPTION);
 		if (n == JOptionPane.YES_OPTION) {
-			LineType lt = (LineType) lineType.getSelectedItem();
 			DrawableItem dLine = null;
 
 			if (atom1.getText().length() == 0 || atom2.getText().length() == 0) {
