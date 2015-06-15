@@ -87,35 +87,46 @@ public class Communicator implements Runnable{
 		jsonImage.put("width", image.getWidth());
 		message.put("image", jsonImage);
 
-		JSONArray pts = new JSONArray();
-		for (DrawableItem i : points.getList()) {
-			DrawablePoint p = (DrawablePoint) i;
-			JSONObject pt = new JSONObject();
-			pt.put("type", p.getType().toString());
-			pt.put("x",p.getx());
-			pt.put("y",p.gety());
-			pts.put(pt);
+
+		JSONArray pts;
+		if (points!=null) {
+			pts = new JSONArray();
+			for (DrawableItem i : points.getList()) {
+				DrawablePoint p = (DrawablePoint) i;
+				JSONObject pt = new JSONObject();
+				pt.put("type", p.getType().toString());
+				pt.put("x",p.getx());
+				pt.put("y",p.gety());
+				pts.put(pt);
+			}
+		} else {
+			pts = null;
 		}
 		message.put("points", pts);
 
-		JSONArray lns = new JSONArray();
-		for (DrawableItem i : lines.getList()) {
-			DrawableLine l = (DrawableLine) i;
-			JSONObject ln = new JSONObject();
+		JSONArray lns;
+		if (lines != null){
+			lns = new JSONArray();
+			for (DrawableItem i : lines.getList()) {
+				DrawableLine l = (DrawableLine) i;
+				JSONObject ln = new JSONObject();
 
-			ln.put("type", l.getType().toString());
-			ln.put("atom1", l.getAtom1());
-			ln.put("atom2", l.getAtom2());
+				ln.put("type", l.getType().toString());
+				ln.put("atom1", l.getAtom1());
+				ln.put("atom2", l.getAtom2());
 
-			double[] ll = new double[]{
-				l.getStartX(),
-				l.getStartY(),
-				l.getEndX(),
-				l.getEndY()
-			};
-			ln.put("data", ll);
+				double[] ll = new double[]{
+					l.getStartX(),
+					l.getStartY(),
+					l.getEndX(),
+					l.getEndY()
+				};
+				ln.put("data", ll);
 
-			lns.put(ln);
+				lns.put(ln);
+			}
+		} else {
+			lns = null;
 		}
 		message.put("lines", lns);
 
@@ -179,7 +190,7 @@ public class Communicator implements Runnable{
 	}
 
 	private void setupProcess() {
-		ProcessBuilder pb = new ProcessBuilder("python", "/home/david/git/thesisinvestigations/code/plugincode/pycode");
+		ProcessBuilder pb = new ProcessBuilder("python", "/home/david/git/imagejplugin/pycode");
 		pb.redirectError(Redirect.INHERIT);
 		try {
 			pyProcess = pb.start();

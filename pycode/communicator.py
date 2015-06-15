@@ -30,15 +30,16 @@ class Communicator(object):
 			sys.stdout.flush()
 
 		elif message['type'] == 'GET_DETECTIONS':
-			for line in message['lines']:
-				if line['type'] == 'BONDLENGTH':
-					t = line['data']
-					p1 = np.array((t[0],t[1]))
-					p2 = np.array((t[2],t[3]))
-					line = p2 - p1
-					bl = np.sqrt(line.dot(line))
-					self.con.setBondlength(bl)
-					break
+			if 'lines' in message and message['lines']:
+				for line in message['lines']:
+					if line['type'] == 'BONDLENGTH':
+						t = line['data']
+						p1 = np.array((t[0],t[1]))
+						p2 = np.array((t[2],t[3]))
+						line = p2 - p1
+						bl = np.sqrt(line.dot(line))
+						self.con.setBondlength(bl)
+						break
 
 			imagedata = np.array(message['image']['data'])
 			image = imagedata.reshape((message['image']['height'],

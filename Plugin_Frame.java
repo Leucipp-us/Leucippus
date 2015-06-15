@@ -219,18 +219,27 @@ public class Plugin_Frame extends PlugInFrame {
         t.add(tt);
         menuBar.add(t);
 
-        t = new Menu("Detect");
-        t.add("Without User Input");
-        t.add("With BondLengths");
-        t.add("With Marked Points");
-
-        mi = new MenuItem("With All User Input");
+        t = new Menu("Analysis");
+        mi = new MenuItem("Raw Detections");
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
-            							pointList,
-            							lineList);
+            							null,
+            							null);
             }
+        });
+        t.add(mi);
+        mi = new MenuItem("Constrain Detection Set");
+        mi.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent e) {
+        		if (lineList.getLength() < 1) {
+        			//Error Dialog Box about needing more bondlengths
+        		}else{
+        			comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
+            							null,
+            							lineList);
+        		}
+        	}
         });
         t.add(mi);
         menuBar.add(t);
