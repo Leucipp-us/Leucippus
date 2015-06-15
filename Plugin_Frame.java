@@ -5,6 +5,8 @@ import ij.plugin.frame.*;
 
 import plugGUI.*;
 import plugComm.Communicator;
+import plugIO.AnnotationWriter;
+import plugIO.AnnotationReader;
 
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -164,7 +166,28 @@ public class Plugin_Frame extends PlugInFrame {
         menuBar = new MenuBar();
         t = new Menu("File");
 
+        mi = new MenuItem("Load Annotations");
+        mi.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		String filename = createFileSaveDialog();
+        		if (filename != null)
+        			AnnotationReader.read(filename,
+	        								pointList,
+	        								lineList);
+        	}
+        });
+        t.add(mi);
+
         mi = new MenuItem("Save Annotations");
+        mi.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		String filename = createFileSaveDialog();
+        		if (filename != null)
+        			AnnotationWriter.write(filename,
+	        								pointList,
+	        								lineList);
+        	}
+        });
         t.add(mi);
 
         tt = new Menu("Save Detections");
@@ -340,9 +363,6 @@ public class Plugin_Frame extends PlugInFrame {
 
 	private String createFileSaveDialog() {
 		JFileChooser chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter(
-		"PNG Images", "png");
-		chooser.setFileFilter(filter);
 		int returnVal = chooser.showSaveDialog(this);
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
 			return chooser.getSelectedFile().getPath();

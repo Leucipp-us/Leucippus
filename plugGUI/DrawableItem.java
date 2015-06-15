@@ -39,15 +39,20 @@ public class DrawableItem {
 	}
 
 	public String toString() {
-		float[] car = color.getRGBComponents(null);
 		StringBuilder out = new StringBuilder();
 		out.append(name);
 		out.append(", ");
 		out.append(draw);
 		out.append(", ");
-		for(int i = 0; i < 4; i++){
-			out.append(car[i]);
-			if (i != 3) out.append(", ");
+		if (color != null){
+			float[] car = color.getRGBComponents(null);
+			for(int i = 0; i < 4; i++){
+				out.append(car[i]);
+				if (i != 3) out.append(", ");
+			}
+		}else{
+			out.append("null");
+			out.append(", ");
 		}
 		return out.toString();
 	}

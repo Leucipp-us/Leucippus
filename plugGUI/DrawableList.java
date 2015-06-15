@@ -100,6 +100,11 @@ public class DrawableList extends JTable{
 		return drawables;
 	}
 
+	public void setList(ArrayList<DrawableItem> items){
+		drawables = items;
+		tableModel.fireTableDataChanged();
+	}
+
 	public void addListener(TableModelListener tml) {
 		getModel().addTableModelListener(tml);
 	}
