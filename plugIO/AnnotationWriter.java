@@ -10,6 +10,7 @@ import javax.xml.transform.stream.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.awt.Color;
+import java.util.ArrayList;
 
 public class AnnotationWriter {
 	public AnnotationWriter(){
@@ -17,7 +18,8 @@ public class AnnotationWriter {
 	}
 	public static void write(String filename, 
 								DrawableList points,
-								DrawableList lines) {
+								DrawableList lines,
+								DrawableList pointsets) {
 		Document dom;
 	    Element e = null;
 
@@ -49,6 +51,12 @@ public class AnnotationWriter {
 	        }
 	        rootEle.appendChild(e);
 
+	        e = dom.createElement("pointsets");
+	        for(DrawableItem i : pointsets.getList()){
+	        	DrawablePointSet ps = (DrawablePointSet)i;
+	        	e.appendChild(writePointSet(dom, ps));
+	        }
+	        rootEle.appendChild(e);
 	        dom.appendChild(rootEle);
 
 	        try {
@@ -134,6 +142,79 @@ public class AnnotationWriter {
 		e = dom.createElement("type");
 		e.appendChild(dom.createTextNode(ln.getType().toString()));
 		root.appendChild(e);
+
+		return root;
+	}
+
+	private static Element writePointSet(Document dom, DrawablePointSet pts) {
+		Element t, tt, e, ee, root = dom.createElement("pointset");
+
+		e = dom.createElement("name");
+		e.appendChild(dom.createTextNode("" + pts.getName()));
+		root.appendChild(e);
+
+		root.appendChild(writeColor(dom, pts.getColor()));
+
+		e = dom.createElement("points");
+		for(int[] pt : pts.getPoints()){
+			t = dom.createElement("point");
+
+			tt = dom.createElement("x");
+			tt.appendChild(dom.createTextNode(""+pt[0]));
+			t.appendChild(tt);
+
+			tt = dom.createElement("y");
+			tt.appendChild(dom.createTextNode(""+pt[1]));
+			t.appendChild(tt);
+			
+			e.appendChild(t);
+		}
+		root.appendChild(e);
+
+		e = dom.createElement("feats");
+		if (pts.getFeatures() != null) {
+			for(ArrayList<int[]> feat : pts.getFeatures()) {
+				ee = dom.createElement("feat");
+				for(int[] pt : feat){
+					t = dom.createElement("point");
+					tt = dom.createElement("x");
+					tt.appendChild(dom.createTextNode(""+pt[0]));
+					t.appendChild(tt);
+
+					tt = dom.createElement("y");
+					tt.appendChild(dom.createTextNode(""+pt[1]));
+					t.appendChild(tt);
+
+					ee.appendChild(t);
+				}
+				e.appendChild(ee);
+			}
+		}
+		root.appendChild(e);
+
+		e = dom.createElement("admap");
+		if (pts.getAdmap() != null) {
+			for(ArrayList<int[]> feat : pts.getAdmap()) {
+				ee = dom.createElement("neighbours");
+				for(int[] pt : feat){
+					t = dom.createElement("point");
+					tt = dom.createElement("x");
+					tt.appendChild(dom.createTextNode(""+pt[0]));
+					t.appendChild(tt);
+
+					tt = dom.createElement("y");
+					tt.appendChild(dom.createTextNode(""+pt[1]));
+					t.appendChild(tt);
+
+					ee.appendChild(t);
+				}
+				e.appendChild(ee);
+			}
+		}
+		root.appendChild(e);
+
+		if (pts.getAdmap() != null) {
+		}
 
 		return root;
 	}

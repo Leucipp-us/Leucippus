@@ -173,7 +173,8 @@ public class Plugin_Frame extends PlugInFrame {
         		if (filename != null)
         			AnnotationReader.read(filename,
 	        								pointList,
-	        								lineList);
+	        								lineList,
+	        								pointsetList);
         	}
         });
         t.add(mi);
@@ -185,7 +186,8 @@ public class Plugin_Frame extends PlugInFrame {
         		if (filename != null)
         			AnnotationWriter.write(filename,
 	        								pointList,
-	        								lineList);
+	        								lineList,
+	        								pointsetList);
         	}
         });
         t.add(mi);

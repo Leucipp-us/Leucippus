@@ -29,7 +29,6 @@ public class DrawablePointSet extends DrawableItem {
 		this.points = pts;
 		this.features = feats;
 		this.admap = admap;
-
 	}
 
 	public ArrayList<int[]> getPoints() {
