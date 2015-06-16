@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 
 
-public class Communicator implements Runnable{
+public class Communicator implements Runnable {
 	private Process pyProcess;
 	private Boolean quit = false;
 	private BufferedReader inStream;
@@ -143,6 +143,7 @@ public class Communicator implements Runnable{
 	}
 
 	private void parsePointSets(JSONObject jmessage) {
+		String name = "";
 		DrawablePointSet dps;
 		JSONArray jas = jmessage.getJSONArray("pointsets");
 
@@ -158,11 +159,11 @@ public class Communicator implements Runnable{
 				in[1] = (int)arr.getDouble(1);
 				pointset.add(in);
 			}
-
+			if(!jo.isNull("name")) name = jo.getString("name");
 			ArrayList<ArrayList<int[]>> featset = extractPointLists(jo, "features");
 			ArrayList<ArrayList<int[]>> admap = extractPointLists(jo, "admap");
 
-			dps = new DrawablePointSet("",pointset, featset, admap);
+			dps = new DrawablePointSet(name,pointset, featset, admap);
 			drawHandler.addPointset(dps);
 		}
 	}

@@ -24,6 +24,7 @@ class Controller(object):
 		self.image = image
 
 		self.rawdetections = self.atomD.detect(image)
+		rdetectset['name'] = "Raw Detections"
 		rdetectset['points'] = self.rawdetections.tolist()
 
 		if self.bondlength != None:
@@ -31,6 +32,7 @@ class Controller(object):
 			rdetectset['admap'] = self.getFeaturesAndAdmap(self.rawdetections)
 
 			constrainset = {}
+			constrainset['name'] = "Refined Detections"
 			cpoints = self.constrain(image,
 									self.rawdetections)
 			constrainset['points'] = cpoints.tolist()

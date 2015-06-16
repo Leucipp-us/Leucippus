@@ -50,9 +50,14 @@ public class Plugin_Frame extends PlugInFrame {
 	private DrawableHandler drawHandler;
 	private Communicator comm;
 	private MenuBar menuBar;
+	private boolean showDetectionHelpers;
+	private boolean showbondlengthmessage;
+	private boolean showPointsMessage;
 
 	public Plugin_Frame() {
-		super("iAnalysis");
+		super("Placeholder");
+		showbondlengthmessage = true;
+		showPointsMessage = true;
 		setup();
 		imp = IJ.getImage();
 		pack();
@@ -251,6 +256,11 @@ public class Plugin_Frame extends PlugInFrame {
             	comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
             							null,
             							null);
+            	if(showbondlengthmessage) {
+            		JOptionPane.showMessageDialog(null, "You can add a bondlength and select Constrain Detection Set to get more accurate results");
+            		showbondlengthmessage = false;
+            	}
+            	
             }
         });
         t.add(mi);
@@ -258,11 +268,15 @@ public class Plugin_Frame extends PlugInFrame {
         mi.addActionListener(new ActionListener(){
         	public void actionPerformed(ActionEvent e) {
         		if (lineList.getLength() < 1) {
-        			//Error Dialog Box about needing more bondlengths
+        			JOptionPane.showMessageDialog(null, "Please Specify a bondlength to use this tool.");
         		}else{
         			comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
             							null,
             							lineList);
+        			if(showPointsMessage){
+        				JOptionPane.showMessageDialog(null, "For even more accurate results specify which atoms are either incorrent or missing.");
+        				showPointsMessage = false;
+        			}
         		}
         	}
         });
@@ -294,8 +308,10 @@ public class Plugin_Frame extends PlugInFrame {
 
 	private void createPointDialog(PointType pt) {
 		Roi roi = imp.getRoi();
-		if (roi == null || roi.getType() != 10)
+		if (roi == null || roi.getType() != 10){
+			JOptionPane.showMessageDialog(null, "To add a point you need to use the imagej point select tool to select a point.");
 			return;//A popup should come up instead of the return
+		}
 
 		JTextField name = new JTextField();
 		final JComponent[] inputs = new JComponent[] {
@@ -318,8 +334,10 @@ public class Plugin_Frame extends PlugInFrame {
 	private void createLineDialog(LineType lt) {
 		Roi roi = imp.getRoi();
 		
-		if (roi == null || !roi.isLine())
+		if (roi == null || !roi.isLine()) {
+			JOptionPane.showMessageDialog(null, "To add a line you need to use the imagej line selection tool to select a line.");
 			return;
+		}
 
 		Line line = (Line)roi;
 
@@ -370,6 +388,10 @@ public class Plugin_Frame extends PlugInFrame {
 			return chooser.getSelectedFile().getPath();
 		}
 		return null;
+	}
+
+	private void createBondLengthInfoDialog() {
+
 	}
 
 
