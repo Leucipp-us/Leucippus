@@ -142,6 +142,48 @@ public class Communicator implements Runnable {
 
 	}
 
+	public void calculatePoints(BufferedImage image,
+								DrawableLine line) {
+		JSONObject message = new JSONObject();
+		message.put("type", "GET_DETECTIONS");
+
+		byte[] idata = ((DataBufferByte) image.getData().getDataBuffer()).getData();
+
+		JSONObject jsonImage = new JSONObject();
+		jsonImage.put("data", idata);
+		jsonImage.put("height", image.getHeight());
+		jsonImage.put("width", image.getWidth());
+		message.put("image", jsonImage);
+
+		JSONArray lns;
+		if (line != null){
+			lns = new JSONArray();
+			JSONObject ln = new JSONObject();
+			ln.put("type", line.getType().toString());
+			ln.put("atom1", line.getAtom1());
+			ln.put("atom2", line.getAtom2());
+
+			double[] ll = new double[]{
+				line.getStartX(),
+				line.getStartY(),
+				line.getEndX(),
+				line.getEndY()
+			};
+			ln.put("data", ll);
+
+			lns.put(ln);
+		} else {
+			lns = null;
+		}
+		message.put("lines", lns);
+		try {
+			outStream.write(message.toString() + "\n");
+			outStream.flush();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+
 	private void parsePointSets(JSONObject jmessage) {
 		String name = "";
 		DrawablePointSet dps;
@@ -204,6 +246,4 @@ public class Communicator implements Runnable {
 			System.out.println(e.toString());
 		}
 	}
-
-
 }

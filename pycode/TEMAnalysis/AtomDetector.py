@@ -83,7 +83,7 @@ class AtomDetector(object):
     
     def __grabAtoms(self, segImg):
         contours, _ = cv2.findContours(segImg,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
-        self.contours = contours
+        self.contours = np.array(contours)
         pointset = []
         for contour in contours:
             p = np.average(contour,axis=0)

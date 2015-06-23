@@ -53,20 +53,16 @@ public class Plugin_Frame extends PlugInFrame {
 	private boolean showDetectionHelpers;
 	private boolean showbondlengthmessage;
 	private boolean showPointsMessage;
+	private LatticeInfoPane latticeInfoPane;
 
 	public Plugin_Frame() {
 		super("Placeholder");
 		showbondlengthmessage = true;
 		showPointsMessage = true;
-		setup();
 		imp = IJ.getImage();
+		setup();
 		pack();
 
-
-		drawHandler = new DrawableHandler(imp, 
-										  pointList, 
-										  lineList,
-										  pointsetList);
 		this.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e) {
 				comm.exit();
@@ -74,7 +70,8 @@ public class Plugin_Frame extends PlugInFrame {
 			}
 		});
 
-		comm = new Communicator(drawHandler);
+		
+
 		show();
 	}
 
@@ -97,6 +94,8 @@ public class Plugin_Frame extends PlugInFrame {
 		
 		removeItemButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	if (tabPane.getSelectedIndex()==0)
+            		return;
 
             	JScrollPane scrollPane = (JScrollPane)tabPane.getSelectedComponent();
             	JViewport viewport = scrollPane.getViewport(); 
@@ -281,6 +280,9 @@ public class Plugin_Frame extends PlugInFrame {
         	}
         });
         t.add(mi);
+
+        mi = new MenuItem("Calculate Using user data");
+        t.add(mi);
         menuBar.add(t);
 		setMenuBar(menuBar);
 		setupLists(c);
@@ -291,7 +293,18 @@ public class Plugin_Frame extends PlugInFrame {
 		pointList = new DrawableList();
 		lineList = new DrawableList();
 		pointsetList = new DrawableList();
+		drawHandler = new DrawableHandler(imp, 
+										  pointList, 
+										  lineList,
+										  pointsetList);
+		comm = new Communicator(drawHandler);
+		latticeInfoPane = new LatticeInfoPane(comm,
+							drawHandler,
+							pointList,
+							lineList,
+							pointsetList);
 
+		tabPane.add("Analysis", new JScrollPane(latticeInfoPane));
 		tabPane.add("Points", new JScrollPane(pointList));
 		tabPane.add("Lines", new JScrollPane(lineList));
 		tabPane.add("PointSets", new JScrollPane(pointsetList));
@@ -303,7 +316,6 @@ public class Plugin_Frame extends PlugInFrame {
 		c.gridwidth = 2;
 		c.fill = GridBagConstraints.BOTH;
 		add(tabPane,c);
-
 	}
 
 	private void createPointDialog(PointType pt) {
@@ -388,14 +400,5 @@ public class Plugin_Frame extends PlugInFrame {
 			return chooser.getSelectedFile().getPath();
 		}
 		return null;
-	}
-
-	private void createBondLengthInfoDialog() {
-
-	}
-
-
-	private void createPointSetSaveDialot() {
-
 	}
 }

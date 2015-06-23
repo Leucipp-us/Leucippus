@@ -3,7 +3,7 @@ import numpy as np
 from TEMAnalysis.AtomDetector import AtomDetector
 from TEMAnalysis.AtomicProfiling import AtomProfiler
 from TEMAnalysis.AdjacencyDetector import AdjacencyDetector
-from TEMAnalysis.Constrainers import spatialConstrain
+from TEMAnalysis.Constrainers import spatialConstrain, contourMaximaConstrain
 
 class Controller(object):
 	def __init__(self):
@@ -20,28 +20,34 @@ class Controller(object):
 
 	def getDetections(self, image):
 		lpoints = []
-		rdetectset = {}
 		self.image = image
 
 		self.rawdetections = self.atomD.detect(image)
-		rdetectset['name'] = "Raw Detections"
-		rdetectset['points'] = self.rawdetections.tolist()
-
-		if self.bondlength != None:
-			rdetectset['features'],\
-			rdetectset['admap'] = self.getFeaturesAndAdmap(self.rawdetections)
-
-			constrainset = {}
-			constrainset['name'] = "Refined Detections"
-			cpoints = self.constrain(image,
-									self.rawdetections)
-			constrainset['points'] = cpoints.tolist()
-			constrainset['features'],\
-			constrainset['admap'] = self.getFeaturesAndAdmap(cpoints)
-			lpoints.append(constrainset)
-
+		rdetectset = {
+			'name'  : "Raw Detections",
+			'points': self.rawdetections.tolist()
+		}
 		lpoints.append(rdetectset)
 
+		refinedset = {
+			'name' : "Refined Detections",
+			'points' : contourMaximaConstrain(image,\
+							self.rawdetections,\
+							self.atomD.getContours()).tolist()
+		}
+		lpoints.append(refinedset)
+
+		if self.bondlength != None:
+			# rdetectset['features'],\
+			# rdetectset['admap'] = self.getFeaturesAndAdmap(self.rawdetections)
+
+			constrainset = {}
+			constrainset['name'] = "Constrained Detections"
+			cpoints = self.constrain(image, self.rawdetections)
+			constrainset['points'] = cpoints.tolist()
+			# constrainset['features'],\
+			# constrainset['admap'] = self.getFeaturesAndAdmap(cpoints)
+			lpoints.append(constrainset)
 
 		pointsets = {}
 		pointsets['type'] = 'pointsets'
