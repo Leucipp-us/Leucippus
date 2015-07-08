@@ -101,7 +101,7 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 	}
 
 	private void setupSecondStep() {
-		JLabel secondlabel = new JLabel("Step 2: Refine Detections");
+		JLabel secondlabel = new JLabel("Step 2: Spatially Contrain Detections");
 		secondpane = new JPanel();
 		secondpane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
