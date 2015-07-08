@@ -19,23 +19,19 @@ class Controller(object):
 		self.bondlength = bondlength
 
 	def getDetections(self, image):
+		pointsToSend = None
 		lpoints = []
 		self.image = image
 
 		self.rawdetections = self.atomD.detect(image)
-		rdetectset = {
-			'name'  : "Raw Detections",
-			'points': self.rawdetections.tolist()
-		}
-		lpoints.append(rdetectset)
 
 		refinedset = {
-			'name' : "Refined Detections",
+			'name' : "Initial Detections",
 			'points' : contourMaximaConstrain(image,\
 							self.rawdetections,\
 							self.atomD.getContours()).tolist()
 		}
-		lpoints.append(refinedset)
+		pointsToSend = refinedset
 
 		if self.bondlength != None:
 			# rdetectset['features'],\
@@ -48,10 +44,11 @@ class Controller(object):
 			# constrainset['features'],\
 			# constrainset['admap'] = self.getFeaturesAndAdmap(cpoints)
 			lpoints.append(constrainset)
+			pointsToSend = constrainset
 
 		pointsets = {}
 		pointsets['type'] = 'pointsets'
-		pointsets['pointsets'] = lpoints
+		pointsets['pointsets'] = [pointsToSend]
 		return pointsets
 
 		# what do I want to do here?
