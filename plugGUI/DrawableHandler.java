@@ -72,6 +72,7 @@ public class DrawableHandler implements TableModelListener,
 		Roi roi = imageP.getRoi();
 
 		if(roi != null) {
+			System.out.println(roi.getState());
 			if(!isAfterRoiMoved) getSelectedPoints(roi);
 
 			for (int j = 0; j < indeces.size(); j++) {
@@ -85,11 +86,19 @@ public class DrawableHandler implements TableModelListener,
 				selections.add(dest);
 				moved_selections.add(arr);
 			}
-			roix = (int)roi.getBounds().getX();
-			roiy = (int)roi.getBounds().getY();
-			roih = (int)roi.getBounds().getHeight();
-			roiw = (int)roi.getBounds().getWidth();
-			redraw();
+
+			if(roi.getType() == 0) {
+				roix = (int)roi.getBounds().getX();
+				roiy = (int)roi.getBounds().getY();
+				roih = (int)roi.getBounds().getHeight();
+				roiw = (int)roi.getBounds().getWidth();
+				redraw();
+			} else if(roi.getType() == 10) {
+				isAfterRoiMoved = false;
+				roix = e.getX();
+				roiy = e.getY();
+			}
+
 		}
 	}
 
@@ -97,7 +106,9 @@ public class DrawableHandler implements TableModelListener,
 		Roi roi = imageP.getRoi();
 
 		if(roi != null) {
-			if(roi.getType() == 10 || roi.getType() == 0) {
+			if(roi.getType() == 0) {
+				// System.out.println(""+roi.getBounds().getX()+", "+
+				// 					roi.getBounds().getY());
 				 if (roih != (int)roi.getBounds().getHeight() ||
 							roiw != (int)roi.getBounds().getWidth()){
 				 	//resizing
@@ -115,6 +126,18 @@ public class DrawableHandler implements TableModelListener,
 					}
 				}
 
+			} else if (roi.getType() == 10) {
+				if (roi.getState() == 4) {
+					//moving
+					double mag = imageP.getCanvas().getMagnification();
+					isRoiMoving = true;
+					for(int i = 0; i < moved_selections.size(); i++){
+						int[] op = selections.get(i);
+						int[] p = moved_selections.get(i);
+						p[0] = (int)((e.getX() - roix)/mag) + op[0];
+						p[1] = (int)((e.getY() - roiy)/mag) + op[1];
+					}
+				}
 			}
 			redraw();
 		}
