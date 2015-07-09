@@ -41,6 +41,8 @@ public class DrawableHandler implements TableModelListener,
 	private int roih;
 	private int roiw;
 	private boolean isRoiMoving = false;
+	private boolean isRoiResizing = false;
+	private boolean isAfterRoiMoved = false;
 
 	public DrawableHandler(ImagePlus imp,
 						   DrawableList pList, 
@@ -70,7 +72,8 @@ public class DrawableHandler implements TableModelListener,
 		Roi roi = imageP.getRoi();
 
 		if(roi != null) {
-			getSelectedPoints(roi);
+			if(!isAfterRoiMoved) getSelectedPoints(roi);
+
 			for (int j = 0; j < indeces.size(); j++) {
 				Integer i = indeces.get(j);
 				Integer p = psindeces.get(j);
@@ -98,6 +101,8 @@ public class DrawableHandler implements TableModelListener,
 				 if (roih != (int)roi.getBounds().getHeight() ||
 							roiw != (int)roi.getBounds().getWidth()){
 				 	//resizing
+				 	isRoiResizing = true;
+				 	isAfterRoiMoved = false;
 				} else if (roix != (int)roi.getBounds().getX() ||
 							roiy != (int)roi.getBounds().getY()) {
 					//moving
@@ -119,7 +124,10 @@ public class DrawableHandler implements TableModelListener,
 		Roi roi = imageP.getRoi();
 		if(roi != null) {
 			redraw();
+
+			if (isRoiMoving) isAfterRoiMoved = true;
 			isRoiMoving = false;
+			isRoiResizing = false;
 		}
 	}
 
@@ -207,7 +215,7 @@ public class DrawableHandler implements TableModelListener,
 						drawLineSet(arr, ps.getAdmap().get(i));
 					}
 
-					if(roi != null){
+					if(roi != null && isRoiResizing){
 						if( (roi.getType() == 0 && roi.contains(arr[0],arr[1])) ||
 							(roi.getType() == 10 && checkInCircle((int) roi.getXBase(),
 																	(int) roi.getYBase(),
@@ -216,7 +224,7 @@ public class DrawableHandler implements TableModelListener,
 																	7)) ) {
 							imp.setLineWidth(9);
 							imp.setColor(getComplement(ps.getColor()));
-							// imp.drawDot(arr[0], arr[1]);
+							imp.drawDot(arr[0], arr[1]);
 						}
 					}
 
@@ -296,6 +304,7 @@ public class DrawableHandler implements TableModelListener,
 
 	private void getSelectedPoints(Roi roi){
 		ArrayList<DrawableItem> tl = pointsetList.getList();
+
 		psindeces = new ArrayList<Integer>();
 		indeces = new ArrayList<Integer>();
 		for (int k = 0; k < tl.size(); k++) {
