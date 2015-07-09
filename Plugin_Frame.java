@@ -249,7 +249,7 @@ public class Plugin_Frame extends PlugInFrame {
         menuBar.add(t);
 
         t = new Menu("Analysis");
-        mi = new MenuItem("Raw Detections");
+        mi = new MenuItem("Initial Detections");
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
@@ -273,7 +273,7 @@ public class Plugin_Frame extends PlugInFrame {
             							null,
             							lineList);
         			if(showPointsMessage){
-        				JOptionPane.showMessageDialog(null, "For even more accurate results specify which atoms are either incorrent or missing.");
+        				JOptionPane.showMessageDialog(null, "For even more accurate results specify which atoms are either incorrect or missing.");
         				showPointsMessage = false;
         			}
         		}
@@ -332,14 +332,46 @@ public class Plugin_Frame extends PlugInFrame {
 		};
 		int n = JOptionPane.showConfirmDialog(null, inputs, "Add Point", JOptionPane.YES_NO_OPTION);
 		if (n == JOptionPane.YES_OPTION) {
-			DrawableItem dPoint = new DrawablePoint(
+			if(pt == PointType.INCORRECT_ATOM){
+				if (pointsetList.getLength() == 0) {
+					JOptionPane.showMessageDialog(null, "You can't select an incorrect point without any pointsets.");
+					return;//A popup should come up instead of the return
+				}
+				int [] sp = {(int)roi.getXBase(), (int)roi.getYBase()};
+				for(DrawableItem di :  pointsetList.getList()){
+					if(di.isDrawn()){
+						boolean breakit = false;
+						DrawablePointSet dps = (DrawablePointSet)di;
+						for(int[] p : dps.getPoints()){
+							double dist = dps.distance(p, sp);
+							if (dist < 7.0){
+								DrawableItem dPoint = new DrawablePoint(
+												name.getText(),
+												(double)p[0],
+												(double)p[1],
+												pt);
+								pointList.addItem(dPoint);
+
+								breakit = true;
+								break;
+							}
+						}
+						if (breakit) break;
+					}
+				}
+			} else {
+				DrawableItem dPoint = new DrawablePoint(
 												name.getText(),
 												roi.getXBase(),
 												roi.getYBase(),
 												pt);
 			
 
-			pointList.addItem(dPoint);
+				pointList.addItem(dPoint);
+			}
+
+
+			
 		} 
 	}
 

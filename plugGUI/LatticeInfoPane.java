@@ -60,7 +60,7 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 	}
 
 	private void setupFirstStep() {
-		JLabel firstlabel = new JLabel("Step 1: Raw Detection");
+		JLabel firstlabel = new JLabel("Step 1: Initial Detections");
 		JPanel firstpane = new JPanel();
 		firstpane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();

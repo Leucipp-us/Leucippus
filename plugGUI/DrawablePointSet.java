@@ -1,5 +1,6 @@
 package plugGUI;
 
+import java.lang.Math;
 import java.util.ArrayList;
 
 public class DrawablePointSet extends DrawableItem {
@@ -41,5 +42,11 @@ public class DrawablePointSet extends DrawableItem {
 
 	public ArrayList<ArrayList<int[]>> getAdmap() {
 		return admap;
+	}
+
+	public double distance(int[] p1, int[] p2) {
+		int dp1 = (p2[1] - p1[1])*(p2[1] - p1[1]);
+		int dp0 = (p2[0] - p1[0])*(p2[0] - p1[0]);
+		return Math.sqrt(dp1 + dp0);
 	}
 }

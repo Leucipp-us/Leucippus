@@ -85,52 +85,35 @@ public class AnnotationReader {
 			Node item = atts.item(k);
 
 			String t;
-			switch (item.getNodeName()) {
-				case "color":
-					color = readColor(item);
-					break;
-
-				case "name":
-					if(item.hasChildNodes()){
-						name = item.getFirstChild().getNodeValue();
-					}else{
-						name = "";
-					}
-					break;
-
-				case "type":
-					type = LineType.valueOf(item.
+			String comp = item.getNodeName();
+			if (comp.equals("color")) {
+				color = readColor(item);
+			} else if (comp.equals("name")) {
+				if(item.hasChildNodes()){
+					name = item.getFirstChild().getNodeValue();
+				}else{
+					name = "";
+				}
+			} else if (comp.equals("type")) {
+				type = LineType.valueOf(item.
 											getFirstChild().
 											getNodeValue());
-					break;
-
-				case "atom1":
-					a1 = item.getFirstChild().getNodeValue();
-					break;
-
-				case "atom2":
-					a2 = item.getFirstChild().getNodeValue();
-					break;
-
-				case "startx":
-					t = item.getFirstChild().getNodeValue();
-					sx = Double.parseDouble(t);
-					break;
-
-				case "starty":
-					t = item.getFirstChild().getNodeValue();
-					sy = Double.parseDouble(t);
-					break;
-
-				case "endx":
-					t = item.getFirstChild().getNodeValue();
-					ex = Double.parseDouble(t);
-					break;
-
-				case "endy":
-					t = item.getFirstChild().getNodeValue();
-					ey = Double.parseDouble(t);
-					break;
+			} else if (comp.equals("atom1")) {
+				a1 = item.getFirstChild().getNodeValue();
+			} else if (comp.equals("atom2")) {
+				a2 = item.getFirstChild().getNodeValue();
+			} else if (comp.equals("startx")) {
+				t = item.getFirstChild().getNodeValue();
+				sx = Double.parseDouble(t);
+			} else if (comp.equals("starty")) {
+				t = item.getFirstChild().getNodeValue();
+				sy = Double.parseDouble(t);
+			} else if (comp.equals("endx")) {
+				t = item.getFirstChild().getNodeValue();
+				ex = Double.parseDouble(t);
+			} else if (comp.equals("endy")) {
+				t = item.getFirstChild().getNodeValue();
+				ey = Double.parseDouble(t);
 			}
 		}
 		DrawableLine l = new DrawableLine(name, sx, sy, ex, ey,
@@ -150,36 +133,26 @@ public class AnnotationReader {
 
 			String t;
 
-			switch(item.getNodeName()){
-				case "color":
-					color = readColor(item);
-					break;
-
-				case "name":
-					if(item.hasChildNodes()){
-						name = item.getFirstChild().getNodeValue();
-					}else{
-						name = "";
-					}
-					break;
-
-				case "type":
-					type = PointType.valueOf(item.
+			String comp = item.getNodeName();
+			if (comp.equals("color")) {
+				color = readColor(item);
+			} else if (comp.equals("name")) {
+				if(item.hasChildNodes()){
+					name = item.getFirstChild().getNodeValue();
+				}else{
+					name = "";
+				}
+			} else if (comp.equals("type")) {
+				type = PointType.valueOf(item.
 											getFirstChild().
 											getNodeValue());
-					break;
-
-				case "x":
-					t = item.getFirstChild().getNodeValue();
-					x = Double.parseDouble(t);
-					break;
-
-				case "y":
-					t = item.getFirstChild().getNodeValue();
-					y = Double.parseDouble(t);
-					break;
+			} else if (comp.equals("x")) {
+				t = item.getFirstChild().getNodeValue();
+				x = Double.parseDouble(t);
+			} else if (comp.equals("y")) {
+				t = item.getFirstChild().getNodeValue();
+				y = Double.parseDouble(t);
 			}
-
 		}
 		DrawablePoint p = new DrawablePoint(name, x, y, type);
 		p.setColor(color);
@@ -196,33 +169,21 @@ public class AnnotationReader {
 			Node item = atts.item(k);
 
 			String t;
-
-			switch(item.getNodeName()){
-				case "color":
-					color = readColor(item);
-					break;
-
-				case "name":
-					if(item.hasChildNodes()){
-						name = item.getFirstChild().getNodeValue();
-					}else{
-						name = "";
-					}
-					break;
-
-				case "points":
-					pts = loadPoints(item.getChildNodes());
-					break;
-
-				case "feats":
-					feats = loadPointsList(item.getChildNodes(), "feat");
-					System.out.println("Loaded Feats");
-					System.out.println(feats.size());
-					break;
-
-				case "admap":
-					admap = loadPointsList(item.getChildNodes(), "neighbours");
-					break;
+			String comp = item.getNodeName();
+			if (comp.equals("color")) {
+				color = readColor(item);
+			} else if (comp.equals("name")) {
+				if(item.hasChildNodes()){
+					name = item.getFirstChild().getNodeValue();
+				}else{
+					name = "";
+				}
+			} else if (comp.equals("points")) {
+				pts = loadPoints(item.getChildNodes());
+			} else if (comp.equals("feats")) {
+				feats = loadPointsList(item.getChildNodes(), "feat");
+			} else if (comp.equals("admap")) {
+				admap = loadPointsList(item.getChildNodes(), "neighbours");
 			}
 		}
 		DrawablePointSet dps = new DrawablePointSet(name, pts, feats, admap);
@@ -248,11 +209,9 @@ public class AnnotationReader {
     	for( int i = 0; i < npts.getLength(); i++){
     		Node item = npts.item(i);
     		String t;
-    		switch (item.getNodeName()) {
-    			case "point":
-    				int[] pt = loadPoint(item.getChildNodes());
-    				pts.add(pt);
-    			break;
+    		if (item.getNodeName().equals("point")) {
+				int[] pt = loadPoint(item.getChildNodes());
+				pts.add(pt);
     		}
     	}
     	return pts;
@@ -265,17 +224,14 @@ public class AnnotationReader {
 			Node item = pt.item(k);
 
 			String t;
-			switch(item.getNodeName()){
-				case "x":
-					t = item.getFirstChild().getNodeValue();
-    				arr[0] = Integer.parseInt(t);
-    				break;
-
-    			case "y":
-					t = item.getFirstChild().getNodeValue();
-    				arr[1] = Integer.parseInt(t);
-    				break;
-			}
+			String comp = item.getNodeName();
+			if (comp.equals("x")) {
+				t = item.getFirstChild().getNodeValue();
+    			arr[0] = Integer.parseInt(t);
+    		} else if (comp.equals("y")) {
+    			t = item.getFirstChild().getNodeValue();
+    			arr[1] = Integer.parseInt(t);
+    		}
 		}
 		return arr;
     }
@@ -287,21 +243,17 @@ public class AnnotationReader {
     	for(int i = 0; i < comps.getLength(); i++) {
     		Node c = comps.item(i);
 
-    		switch (c.getNodeName()) {
-    			case "red":
-    				t = c.getFirstChild().getNodeValue();
-    				r = Integer.parseInt(t);
-    				break;
-    			case "green":
-    				t = c.getFirstChild().getNodeValue();
-    				g = Integer.parseInt(t);
-    				break;
-    			case"blue":
-    				t = c.getFirstChild().getNodeValue();
-    				b = Integer.parseInt(t);
-    				break;
-
-    		}
+    		String comp = c.getNodeName();
+			if (comp.equals("red")) {
+				t = c.getFirstChild().getNodeValue();
+    			r = Integer.parseInt(t);
+			} else if (comp.equals("green")) {
+				t = c.getFirstChild().getNodeValue();
+    			g = Integer.parseInt(t);
+			} else if (comp.equals("blue")) {
+				t = c.getFirstChild().getNodeValue();
+				b = Integer.parseInt(t);
+			}
     	}
     	return new Color(r,g,b);
     } 
