@@ -38,6 +38,8 @@ public class DrawableHandler implements TableModelListener,
 	private ImageProcessor imp;
 	private int roix;
 	private int roiy;
+	private int roih;
+	private int roiw;
 	private boolean isRoiMoving = false;
 
 	public DrawableHandler(ImagePlus imp,
@@ -80,8 +82,10 @@ public class DrawableHandler implements TableModelListener,
 				selections.add(dest);
 				moved_selections.add(arr);
 			}
-			roix = e.getX();
-			roiy = e.getY();
+			roix = (int)roi.getBounds().getX();
+			roiy = (int)roi.getBounds().getY();
+			roih = (int)roi.getBounds().getHeight();
+			roiw = (int)roi.getBounds().getWidth();
 			redraw();
 		}
 	}
@@ -91,16 +95,21 @@ public class DrawableHandler implements TableModelListener,
 
 		if(roi != null) {
 			if(roi.getType() == 10 || roi.getType() == 0) {
-				if (roix != e.getX()) {
-					//know it's moving
+				 if (roih != (int)roi.getBounds().getHeight() ||
+							roiw != (int)roi.getBounds().getWidth()){
+				 	//resizing
+				} else if (roix != (int)roi.getBounds().getX() ||
+							roiy != (int)roi.getBounds().getY()) {
+					//moving
 					isRoiMoving = true;
 					for(int i = 0; i < moved_selections.size(); i++){
 						int[] op = selections.get(i);
 						int[] p = moved_selections.get(i);
-						p[0] = e.getX() - roix + op[0];
-						p[1] = e.getY() - roiy + op[1];
+						p[0] = (int)roi.getBounds().getX() - roix + op[0];
+						p[1] = (int)roi.getBounds().getY() - roiy + op[1];
 					}
 				}
+
 			}
 			redraw();
 		}
@@ -109,8 +118,8 @@ public class DrawableHandler implements TableModelListener,
 	public void mouseReleased(MouseEvent e) {
 		Roi roi = imageP.getRoi();
 		if(roi != null) {
-			isRoiMoving = false;
 			redraw();
+			isRoiMoving = false;
 		}
 	}
 
@@ -167,6 +176,19 @@ public class DrawableHandler implements TableModelListener,
 		}
 
 		tl = pointsetList.getList();
+		if (roi != null) {
+			for (int j = 0; j < indeces.size(); j++) {
+				Integer i = indeces.get(j);
+				Integer p = psindeces.get(j);
+
+				DrawablePointSet dps = (DrawablePointSet) tl.get(p);
+				int[] arr = dps.getPoints().get(i);
+				imp.setLineWidth(9);
+				imp.setColor(getComplement(dps.getColor()));
+				imp.drawDot(arr[0], arr[1]);
+			}
+		}
+
 		for (DrawableItem item : tl) {
 			DrawablePointSet ps = (DrawablePointSet) item;
 			if(ps.isDrawn()) {
@@ -185,7 +207,7 @@ public class DrawableHandler implements TableModelListener,
 						drawLineSet(arr, ps.getAdmap().get(i));
 					}
 
-					if(roi != null && isRoiMoving){
+					if(roi != null){
 						if( (roi.getType() == 0 && roi.contains(arr[0],arr[1])) ||
 							(roi.getType() == 10 && checkInCircle((int) roi.getXBase(),
 																	(int) roi.getYBase(),
@@ -194,7 +216,7 @@ public class DrawableHandler implements TableModelListener,
 																	7)) ) {
 							imp.setLineWidth(9);
 							imp.setColor(getComplement(ps.getColor()));
-							imp.drawDot(arr[0], arr[1]);
+							// imp.drawDot(arr[0], arr[1]);
 						}
 					}
 
