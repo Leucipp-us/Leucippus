@@ -72,7 +72,6 @@ public class DrawableHandler implements TableModelListener,
 		Roi roi = imageP.getRoi();
 
 		if(roi != null) {
-			System.out.println(roi.getState());
 			if(!isAfterRoiMoved) getSelectedPoints(roi);
 
 			for (int j = 0; j < indeces.size(); j++) {
@@ -107,13 +106,13 @@ public class DrawableHandler implements TableModelListener,
 
 		if(roi != null) {
 			if(roi.getType() == 0) {
-				// System.out.println(""+roi.getBounds().getX()+", "+
-				// 					roi.getBounds().getY());
+
 				 if (roih != (int)roi.getBounds().getHeight() ||
 							roiw != (int)roi.getBounds().getWidth()){
 				 	//resizing
 				 	isRoiResizing = true;
 				 	isAfterRoiMoved = false;
+				 	
 				} else if (roix != (int)roi.getBounds().getX() ||
 							roiy != (int)roi.getBounds().getY()) {
 					//moving
@@ -207,7 +206,7 @@ public class DrawableHandler implements TableModelListener,
 		}
 
 		tl = pointsetList.getList();
-		if (roi != null) {
+		if (roi != null && !isRoiResizing) {
 			for (int j = 0; j < indeces.size(); j++) {
 				Integer i = indeces.get(j);
 				Integer p = psindeces.get(j);
