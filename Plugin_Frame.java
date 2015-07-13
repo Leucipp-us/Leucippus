@@ -216,6 +216,15 @@ public class Plugin_Frame extends PlugInFrame {
         menuBar.add(t);
 
         t = new Menu("Edit");
+        tt = new Menu("Points");
+        mi = new MenuItem("Merge Points");
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                drawHandler.mergeSelected();
+            }
+        });
+        tt.add(mi);
+        t.add(tt);
         menuBar.add(t);
 
         t = new Menu("Insert");

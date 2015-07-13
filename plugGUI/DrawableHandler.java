@@ -5,6 +5,7 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.ColorModel;
@@ -150,6 +151,7 @@ public class DrawableHandler implements TableModelListener,
 			if (isRoiMoving) isAfterRoiMoved = true;
 			isRoiMoving = false;
 			isRoiResizing = false;
+			roi.temporarilyHide();
 		}
 	}
 
@@ -354,6 +356,54 @@ public class DrawableHandler implements TableModelListener,
 				}
 			}
 		}
+	}
+
+	public int mergeSelected() {
+		Roi roi = imageP.getRoi();
+
+		int count = 0;
+		for(DrawableItem i : pointsetList.getList()){
+			if (i.isDrawn()) count++;
+			if (count == 2) break;
+		}
+
+		if (count != 1) return 1;
+
+		if(roi!=null){
+			getSelectedPoints(roi);
+			moved_selections = new ArrayList<int[]>();
+			for (int j = 0; j < indeces.size(); j++) {
+				Integer i = indeces.get(j);
+				Integer p = psindeces.get(j);
+
+				DrawablePointSet dps = (DrawablePointSet) pointsetList.getList().get(p);
+				int[] arr = dps.getPoints().get(i);
+				moved_selections.add(arr);
+			}
+
+
+			double xavg = 0, yavg = 0;
+
+			for(int[] p : moved_selections){
+				xavg += p[0];
+				yavg += p[1];
+			}
+
+			xavg /= moved_selections.size();
+			yavg /= moved_selections.size();
+
+			int[] np = {(int)xavg, (int)yavg};
+
+			Collections.sort(indeces, Collections.reverseOrder());
+			DrawablePointSet dps = (DrawablePointSet)pointsetList.getList().get(0);
+			for (int i : indeces){
+				dps.getPoints().remove(i);
+			}
+			dps.getPoints().add(np);
+		}
+		getSelectedPoints(roi);
+		redraw();
+		return 0;
 	}
 
 	//needed because java (java's stupid)
