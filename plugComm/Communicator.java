@@ -206,6 +206,7 @@ public class Communicator implements Runnable {
 			ArrayList<ArrayList<int[]>> admap = extractPointLists(jo, "admap");
 
 			dps = new DrawablePointSet(name,pointset, featset, admap);
+			drawHandler.hideAll();
 			drawHandler.addPointset(dps);
 		}
 	}

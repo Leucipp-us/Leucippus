@@ -159,6 +159,17 @@ public class DrawableHandler implements TableModelListener,
 		pointsetList.addItem(d);
 	}
 
+	public void hideAll(){
+		for(DrawableItem i : pointList.getList())
+			i.isDrawn(false);
+
+		for(DrawableItem i : lineList.getList())
+			i.isDrawn(false);
+
+		for(DrawableItem i : pointsetList.getList())
+			i.isDrawn(false);
+	}
+
 	public BufferedImage getCurrentImage() {
 		return imageP.getBufferedImage();
 	}
