@@ -69,6 +69,7 @@ class AtomDetector(object):
         self.segmenter = DerivativeSegmenter()
         self.points = None
         self.contours = None
+        self.segImg = None
         
     def getSegmenter(self):
         return self.segmenter
@@ -114,7 +115,8 @@ class AtomDetector(object):
             if M['m00'] >= 1.0:
                 centers.append(np.array((int(M['m10']/M['m00']), int(M['m01']/M['m00']))))
                 conts.append(cnt)
-            
+        
+        self.segImg = segImg
         self.points = np.array(centers)
         self.contours = np.array(conts)
         return self.points
