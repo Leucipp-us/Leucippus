@@ -84,7 +84,7 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 		c.gridx = 0;
 		c.gridy = 2;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		JButton calc = new JButton("Calculate");
+		JButton calc = new JButton("Detect");
 		firstpane.add(calc, c);
 
 		calc.addActionListener(new ActionListener() {
@@ -149,7 +149,7 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 		c.gridx = 0;
 		c.gridy = 3;
 		c.gridwidth = 2;
-		JButton calc = new JButton("Calculate");
+		JButton calc = new JButton("Constrain");
 		secondpane.add(calc,c);
 
 		calc.addActionListener(new ActionListener() {
