@@ -34,17 +34,10 @@ class Controller(object):
 		pointsToSend = refinedset
 
 		if self.bondlength != None:
-			# rdetectset['features'],\
-			# rdetectset['admap'] = self.getFeaturesAndAdmap(self.rawdetections)
-
-			constrainset = {}
-			constrainset['name'] = "Constrained Detections"
-			cpoints = self.constrain(image, self.rawdetections)
-			constrainset['points'] = cpoints.tolist()
-			# constrainset['features'],\
-			# constrainset['admap'] = self.getFeaturesAndAdmap(cpoints)
-			lpoints.append(constrainset)
-			pointsToSend = constrainset
+			pointsToSend = {
+				'name'  : "Constrained Detections",
+				'points': self.constrain().tolist()
+				}
 
 		pointsets = {}
 		pointsets['type'] = 'pointsets'
@@ -53,8 +46,8 @@ class Controller(object):
 
 		# what do I want to do here?
 
-	def constrain(self, image, pointset):
-		return pointset[spatialConstrain(image, pointset, self.bondlength)]
+	def constrain(self):
+		return spatialConstrain(self.atomD, self.bondlength)
 
 	def getFeaturesAndAdmap(self, pointset):
 		self.profiler = AtomProfiler(self.bondlength)
