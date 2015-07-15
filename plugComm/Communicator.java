@@ -234,7 +234,7 @@ public class Communicator implements Runnable {
 
 	private void setupProcess() {
 		ProcessBuilder pb = new ProcessBuilder("python", "/home/david/git/imagejplugin/pycode");
-		// pb.redirectError(Redirect.INHERIT);
+		pb.redirectError(Redirect.INHERIT);
 		try {
 			pyProcess = pb.start();
 			inStream = new BufferedReader(
