@@ -1,6 +1,9 @@
 import numpy as np
+import numpy.linalg as la
 import cv2
 import matplotlib.pyplot as mpl
+import math
+import copy
 
 class Segmenter(object):
 # This class will be the default segmenter for the atom detector
@@ -29,11 +32,15 @@ class AdaptiveSegmenter(object):
 
 class DerivativeSegmenter(object):
     def __init__(self):
+        self.sigma = 0
+        self.ksize = 17
         return
     
     def segment(self, image, bias=0):
         from scipy.ndimage import convolve
-        fimage = cv2.GaussianBlur(image,(17,17),0).astype(np.int32)
+        fimage = cv2.GaussianBlur(image,
+                                  (self.ksize,self.ksize),
+                                  self.sigma).astype(np.int32)
         
 
         def con(k):
@@ -82,11 +89,33 @@ class AtomDetector(object):
         return self.segmenter.segment(image)
     
     def __grabAtoms(self, segImg):
-        contours, _ = cv2.findContours(segImg,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
-        self.contours = np.array(contours)
-        pointset = []
-        for contour in contours:
-            p = np.average(contour,axis=0)
-            pointset.append(np.round(p))
-        self.points = np.squeeze(pointset)
+        from scipy.spatial import ConvexHull
+        contours, _ = cv2.findContours(segImg.copy(),
+                                        cv2.RETR_EXTERNAL,
+                                        cv2.CHAIN_APPROX_NONE)
+        
+        for cnt in contours:
+            M = cv2.moments(cnt)
+            if M['m00'] >= 1.0:
+                c = np.squeeze(cnt)
+                cv2.fillConvexPoly(segImg, c[ConvexHull(c).vertices], 1)
+            else:
+                cv2.fillConvexPoly(segImg, cnt, 0)
+
+        contours, _ = cv2.findContours(segImg.copy(),
+                                        cv2.RETR_EXTERNAL,
+                                        cv2.CHAIN_APPROX_NONE)        
+
+        
+        conts = []
+        centers = []
+        for cnt in contours:
+            M = cv2.moments(cnt)
+            if M['m00'] >= 1.0:
+                centers.append(np.array((int(M['m10']/M['m00']), int(M['m01']/M['m00']))))
+                conts.append(cnt)
+            
+        self.points = np.array(centers)
+        self.contours = np.array(conts)
         return self.points
+
