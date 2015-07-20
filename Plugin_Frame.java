@@ -2,6 +2,7 @@ import ij.*;
 import ij.gui.*;
 import ij.process.*;
 import ij.plugin.frame.*;
+import ij.gui.HistogramWindow;
 
 import plugGUI.*;
 import plugComm.Communicator;
@@ -107,63 +108,6 @@ public class Plugin_Frame extends PlugInFrame {
             }
         });
 
-		/*
-        saveImage.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-				String filepath = createFileSaveDialog();
-				if (filepath != null) {
-					try {
-						BufferedImage img = drawHandler.getCurrentImage();
-						File outputfile = new File(filepath);
-						ImageIO.write(img, "png", outputfile);
-					} catch (Exception ex) {
-						System.out.println(ex.toString());
-					}
-                }
-            }
-        });
-
-        saveAnnotationsFile.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e){
-        		String filepath = createFileSaveDialog();
-        		if(filepath != null) {
-        			BufferedWriter writer = null;
-        			try {
-        				writer = new BufferedWriter(
-        					new OutputStreamWriter(
-        						new FileOutputStream(filepath),
-        						"utf-8"));
-
-        				writer.write("Points:\n");
-        				for(DrawableItem i : pointList.getList()) {
-        					writer.write(((DrawablePoint) i).toString());
-        					writer.write("\n");
-        				}
-
-        				writer.write("Lines:\n");
-        				for (DrawableItem i : lineList.getList()) {
-        					writer.write(((DrawableLine) i).toString());
-        					writer.write("\n");
-        				}
-
-        				writer.flush();
-        			} catch (Exception ex) {
-        				System.out.println(ex.toString());
-        			} finally {
-					   try {writer.close();} catch (Exception ex) {}
-					}
-        		}
-        	}
-        });
-
-		recalculatePointsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
-            							pointList,
-            							lineList);
-            }
-        });*/
-
         Menu t;
         Menu tt;
         MenuItem mi;
@@ -258,6 +202,18 @@ public class Plugin_Frame extends PlugInFrame {
         menuBar.add(t);
 
         t = new Menu("Analysis");
+        mi = new MenuItem("Histogram");
+        mi.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e){
+        		HistogramWindow hw = new HistogramWindow("ROI Hist",
+        											imp,
+        											8,
+        											0.0,
+        											255.0);
+        	}
+        });
+        t.add(mi);
+
         mi = new MenuItem("Initial Detections");
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
