@@ -15,9 +15,6 @@ class Communicator(object):
 			line = sys.stdin.readline()
 			message = json.loads(line)
 			self.routeMessage(message)
-			
-
-		print >> sys.stderr, "EXITING"
 
 
 	def routeMessage(self, message):

@@ -32,7 +32,7 @@ class HOI:
                         
                         bins, _ = np.histogram(image[istart:iend, jstart:jend], bins=8, range=(0, maximum))
                         featureVector.append(bins)
-                featureVector = np.array(featureVector).reshape((self.blocksx*self.blocksy*8,1))
+                featureVector = np.array(featureVector).reshape((self.blocksx*self.blocksy*8))
             else:
                 featureVector = np.array([-1] * (self.blocksx*self.blocksy*8))
             feats.append(featureVector)

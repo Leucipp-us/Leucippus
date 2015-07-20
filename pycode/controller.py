@@ -38,6 +38,7 @@ class Controller(object):
 				'points': self.constrain().tolist(),
 			})
 
+
 		hois = HOI().run(image, pointsToSend['points'], imagemax=True)
 		hois = [a.tolist() for a in hois]
 		pointsToSend.update({
@@ -47,9 +48,8 @@ class Controller(object):
 		pointsets = {}
 		pointsets['type'] = 'pointsets'
 		pointsets['pointsets'] = [pointsToSend]
-		return pointsets
 
-		# what do I want to do here?
+		return pointsets
 
 	def constrain(self):
 		return spatialConstrain(self.atomD, self.bondlength)
