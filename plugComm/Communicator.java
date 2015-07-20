@@ -192,36 +192,33 @@ public class Communicator implements Runnable {
 		for (int i = 0; i < jas.length(); i++) {
 			JSONObject jo = jas.getJSONObject(i);
 
-			JSONArray ja = jo.getJSONArray("points");
-			ArrayList<int[]> pointset = new ArrayList<int[]>();
-			for(int j = 0; j < ja.length(); j++) {
-				JSONArray arr = ja.getJSONArray(j);
-				int[] in = new int[2];
-				in[0] = (int)arr.getDouble(0);
-				in[1] = (int)arr.getDouble(1);
-				pointset.add(in);
-			}
-
-			ArrayList<int[]> hois = new ArrayList<int[]>();
-			ja = jo.getJSONArray("points");
-			for(int j = 0; j < ja.length(); j++){
-				JSONArray arr = ja.getJSONArray(j);
-				int arrlen = arr.length();
-				int[] in = new int[arrlen];
-				for (int k = 0; k < arrlen; k++) {
-					in[k] = (int) arr.getDouble(k);
-				}
-				hois.add(in);
-			}
-
 			if(!jo.isNull("name")) name = jo.getString("name");
+			ArrayList<int[]> pointset = extractIntList(jo, "points");
+			ArrayList<int[]> hoislist = extractIntList(jo, "hois");
 			ArrayList<ArrayList<int[]>> featset = extractPointLists(jo, "features");
 			ArrayList<ArrayList<int[]>> admap = extractPointLists(jo, "admap");
 
-			dps = new DrawablePointSet(name,pointset, featset, admap, hois);
+			dps = new DrawablePointSet(name,pointset, featset, admap, hoislist);
 			drawHandler.hideAll();
 			drawHandler.addPointset(dps);
 		}
+	}
+
+	private ArrayList<int[]> extractIntList(JSONObject jo, String key){
+		ArrayList<int[]> intlist = new ArrayList<int[]>();
+		JSONArray ja = jo.getJSONArray(key);
+
+		for(int j = 0; j < ja.length(); j++){
+
+			JSONArray arr = ja.getJSONArray(j);
+			int[] in = new int[arr.length()];
+
+			for (int k = 0; k < arr.length(); k++) {
+				in[k] = (int) arr.getDouble(k);
+			}
+			intlist.add(in);
+		}
+		return intlist;
 	}
 
 	private ArrayList<ArrayList<int[]>> extractPointLists(JSONObject jo, String key){
