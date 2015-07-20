@@ -201,11 +201,24 @@ public class Communicator implements Runnable {
 				in[1] = (int)arr.getDouble(1);
 				pointset.add(in);
 			}
+
+			ArrayList<int[]> hois = new ArrayList<int[]>();
+			ja = jo.getJSONArray("points");
+			for(int j = 0; j < ja.length(); j++){
+				JSONArray arr = ja.getJSONArray(j);
+				int arrlen = arr.length();
+				int[] in = new int[arrlen];
+				for (int k = 0; k < arrlen; k++) {
+					in[k] = (int) arr.getDouble(k);
+				}
+				hois.add(in);
+			}
+
 			if(!jo.isNull("name")) name = jo.getString("name");
 			ArrayList<ArrayList<int[]>> featset = extractPointLists(jo, "features");
 			ArrayList<ArrayList<int[]>> admap = extractPointLists(jo, "admap");
 
-			dps = new DrawablePointSet(name,pointset, featset, admap);
+			dps = new DrawablePointSet(name,pointset, featset, admap, hois);
 			drawHandler.hideAll();
 			drawHandler.addPointset(dps);
 		}

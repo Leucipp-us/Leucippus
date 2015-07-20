@@ -4,6 +4,7 @@ from TEMAnalysis.AtomDetector import AtomDetector
 from TEMAnalysis.AtomicProfiling import AtomProfiler
 from TEMAnalysis.AdjacencyDetector import AdjacencyDetector
 from TEMAnalysis.Constrainers import spatialConstrain, contourMaximaConstrain
+from TEMAnalysis.HOI import HOI
 
 class Controller(object):
 	def __init__(self):
@@ -26,18 +27,22 @@ class Controller(object):
 		self.rawdetections = self.atomD.detect(image)
 
 		refinedset = {
-			'name' : "Initial Detections",
-			'points' : contourMaximaConstrain(image,\
-							self.rawdetections,\
-							self.atomD.getContours()).tolist()
+			'name' 	: "Initial Detections",
+			'points': self.rawdetections.tolist()
 		}
 		pointsToSend = refinedset
 
 		if self.bondlength != None:
-			pointsToSend = {
+			pointsToSend.update({
 				'name'  : "Constrained Detections",
-				'points': self.constrain().tolist()
-				}
+				'points': self.constrain().tolist(),
+			})
+
+		hois = HOI().run(image, pointsToSend['points'], imagemax=True)
+		hois = [a.tolist() for a in hois]
+		pointsToSend.update({
+			'hois'	: hois
+		})
 
 		pointsets = {}
 		pointsets['type'] = 'pointsets'
