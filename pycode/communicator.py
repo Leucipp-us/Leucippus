@@ -45,4 +45,16 @@ class Communicator(object):
 			retset = self.con.getDetections(image)
 			print json.dumps(retset)
 			sys.stdout.flush()
+		elif message['type'] == 'GET_HISTOGRAM':
+			point = np.array(message['point']['data'])
+			imagedata = np.array(message['image']['data'])
+			image = imagedata.reshape((message['image']['height'],
+								message['image']['width'])).astype(np.uint8)
+
+			blt, imt = (message['histdata']['blocktype'],message['histdata']['imagetype'])
+			retset = self.con.getHistogram(image, point, blt, imt)
+			print json.dumps(retset)
+
+		else:
+			print >> sys.stderr, message['type']
 			

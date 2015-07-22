@@ -62,3 +62,12 @@ class Controller(object):
 		admap = self.adjD.findBonds(pointset)
 
 		return [v.tolist() for v in rfeatpts], [v.tolist() for v in admap]
+
+	def getHistogram(self, image, point, blt, imt):
+		hois = HOI().run(image, np.array([point]))
+
+		return {
+			'type'      : 'histogram',
+			'winid'     : 0,
+			'histogram' : hois[0].tolist()
+		}

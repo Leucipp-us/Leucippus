@@ -1,8 +1,8 @@
 import ij.*;
-import ij.gui.*;
+import ij.gui.Roi;
+import ij.gui.Line;
 import ij.process.*;
 import ij.plugin.frame.*;
-import ij.gui.HistogramWindow;
 
 import plugGUI.*;
 import plugComm.Communicator;
@@ -25,6 +25,8 @@ import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.io.FileOutputStream;
 
+import java.util.ArrayList;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -39,7 +41,6 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.JCheckBox;
 import javax.swing.JTabbedPane;
-
 
 
 public class Plugin_Frame extends PlugInFrame {
@@ -205,11 +206,16 @@ public class Plugin_Frame extends PlugInFrame {
         mi = new MenuItem("Histogram");
         mi.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e){
-        		HistogramWindow hw = new HistogramWindow("ROI Hist",
-        											imp,
-        											8,
-        											0.0,
-        											255.0);
+        		ArrayList<int[]> sels = drawHandler.getSelections();
+        		if (sels.size() != 1){
+        			//output to user that only one point can be selected
+        			System.out.println(sels.size());
+        			return;
+        		}
+        		//
+        		comm.getHistogram(drawHandler.getGrayScaleOriginal(),
+        							sels.get(0),
+        							new HistogramWindow());
         	}
         });
         t.add(mi);

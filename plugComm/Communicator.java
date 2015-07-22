@@ -184,6 +184,39 @@ public class Communicator implements Runnable {
 		}
 	}
 
+	public void getHistogram(BufferedImage image,
+								int[] point,
+								Object histwindow) {
+		JSONObject message = new JSONObject();
+		message.put("type", "GET_HISTOGRAM");
+		//NEED TO SET CALLBACK FOR WINDOW AND SEND WINDOW ID
+
+		byte[] idata = ((DataBufferByte) image.getData().getDataBuffer()).getData();
+
+		JSONObject jsonImage = new JSONObject();
+		jsonImage.put("data", idata);
+		jsonImage.put("height", image.getHeight());
+		jsonImage.put("width", image.getWidth());
+		message.put("image", jsonImage);
+
+		JSONObject jsonPoint = new JSONObject();
+		jsonPoint.put("data", point);
+		message.put("point", jsonPoint);
+
+
+		JSONObject histData = new JSONObject();
+		histData.put("blocktype", 'r');
+		histData.put("imagetype", 'i');
+		message.put("histdata", histData);
+
+		try {
+			outStream.write(message.toString() + "\n");
+			outStream.flush();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+
 	private void parsePointSets(JSONObject jmessage) {
 		String name = "";
 		DrawablePointSet dps;

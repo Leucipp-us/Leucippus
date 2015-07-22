@@ -20,7 +20,6 @@ import javax.swing.event.TableModelListener;
 
 
 public class LatticeInfoPane extends JPanel implements TableModelListener{
-	private String[] testArray = {"BondLength","BondLength","BondLength"};
 	private JPanel secondpane;
 	private Communicator comm;
 	private DrawableList pointlist;
