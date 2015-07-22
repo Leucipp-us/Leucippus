@@ -6,4 +6,4 @@ all:
 	javac -classpath $(CLASSPATH) Plugin_Frame.java
 
 run:
-	imagej ~/git/thesis-notebooks/images/au100.JPG
+	imagej ~/git/thesis-notebooks/images/graphene1.png

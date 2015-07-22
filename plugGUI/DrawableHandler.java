@@ -1,6 +1,7 @@
 package plugGUI;
 
 import ij.gui.Roi;
+import ij.gui.Overlay;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
@@ -66,8 +67,22 @@ public class DrawableHandler implements TableModelListener,
 		redraw();
 	}
 
-	public void mousePressed(MouseEvent e) {
+	public void getXYSelections() {
 		ArrayList<DrawableItem> tl = pointsetList.getList();	
+		for (int j = 0; j < indeces.size(); j++) {
+			Integer i = indeces.get(j);
+			Integer p = psindeces.get(j);
+
+			DrawablePointSet dps = (DrawablePointSet) tl.get(p);
+			int[] arr = dps.getPoints().get(i);
+			int[] dest = new int[2];
+			System.arraycopy(arr, 0, dest, 0, arr.length );
+			selections.add(dest);
+			moved_selections.add(arr);
+		}
+	}
+
+	public void mousePressed(MouseEvent e) {
 		selections = new ArrayList<int[]>();
 		moved_selections = new ArrayList<int[]>();
 		Roi roi = imageP.getRoi();
@@ -75,24 +90,14 @@ public class DrawableHandler implements TableModelListener,
 		if(roi != null) {
 			if(!isAfterRoiMoved) getSelectedPoints(roi);
 
-			for (int j = 0; j < indeces.size(); j++) {
-				Integer i = indeces.get(j);
-				Integer p = psindeces.get(j);
-
-				DrawablePointSet dps = (DrawablePointSet) tl.get(p);
-				int[] arr = dps.getPoints().get(i);
-				int[] dest = new int[2];
-				System.arraycopy(arr, 0, dest, 0, arr.length );
-				selections.add(dest);
-				moved_selections.add(arr);
-			}
+			getXYSelections();
 
 			if(roi.getType() == 0) {
 				roix = (int)roi.getBounds().getX();
 				roiy = (int)roi.getBounds().getY();
 				roih = (int)roi.getBounds().getHeight();
 				roiw = (int)roi.getBounds().getWidth();
-				redraw();
+				// redraw();
 			} else if(roi.getType() == 10) {
 				isAfterRoiMoved = false;
 				roix = e.getX();
@@ -100,6 +105,10 @@ public class DrawableHandler implements TableModelListener,
 			}
 
 		}
+	}
+
+	public ArrayList<int[]> getSelections(){
+		return selections;
 	}
 
 	public void mouseDragged(MouseEvent e) {
@@ -151,8 +160,13 @@ public class DrawableHandler implements TableModelListener,
 			if (isRoiMoving) isAfterRoiMoved = true;
 			isRoiMoving = false;
 			isRoiResizing = false;
-			roi.temporarilyHide();
+			getSelectedPoints(roi);
+			getXYSelections();
 		}
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		redraw();
 	}
 
 	public void addPointset(DrawablePointSet d){
@@ -187,11 +201,11 @@ public class DrawableHandler implements TableModelListener,
 	}
 
 	public void redraw() {
+		//important to get ROI before the imageP is set
+		Roi roi = imageP.getRoi();
 		imageP.setImage(originalImage);
 		imp = imageP.getProcessor().convertToColorProcessor();
 		imageP.setProcessor(imp);
-
-		Roi roi = imageP.getRoi();
 
 		ArrayList<DrawableItem> tl = pointList.getList();
 
@@ -269,6 +283,8 @@ public class DrawableHandler implements TableModelListener,
 				}
 			}
 		}
+		if (roi != null)
+			imageP.setRoi(roi);
 		imageP.repaintWindow();
 	}
 
@@ -418,8 +434,7 @@ public class DrawableHandler implements TableModelListener,
 	}
 
 	//needed because java (java's stupid)
-	public void mouseExited(MouseEvent e) {}
-	public void mouseClicked(MouseEvent e) {}	
+	public void mouseExited(MouseEvent e) {}	
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseMoved(MouseEvent e) {}
 }
