@@ -1,6 +1,6 @@
 import sys
 import numpy as np
-from TEMAnalysis.AtomDetector import AtomDetector
+from TEMAnalysis.AtomDetector import AtomDetector, DerivativeSegmenter
 from TEMAnalysis.AtomicProfiling import AtomProfiler
 from TEMAnalysis.AdjacencyDetector import AdjacencyDetector
 from TEMAnalysis.Constrainers import spatialConstrain, contourMaximaConstrain
@@ -19,11 +19,18 @@ class Controller(object):
 	def setBondlength(self, bondlength):
 		self.bondlength = bondlength
 
-	def getDetections(self, image):
+	def getDetections(self, image, sigma=False, blocksize=False):
 		pointsToSend = None
 		lpoints = []
 		self.image = image
 
+
+		segger = DerivativeSegmenter()
+		if sigma:
+			segger.sigma = sigma
+		if blocksize:
+			segger.ksize = blocksize
+		self.atomD.setSegmenter(segger)
 		self.rawdetections = self.atomD.detect(image)
 
 		refinedset = {

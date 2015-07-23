@@ -42,7 +42,9 @@ class Communicator(object):
 			image = imagedata.reshape((message['image']['height'],
 								message['image']['width'])).astype(np.uint8)
 
-			retset = self.con.getDetections(image)
+			retset = self.con.getDetections(image,
+											message['sigma'],
+											message['blocksize'])
 			print json.dumps(retset)
 			sys.stdout.flush()
 		elif message['type'] == 'GET_HISTOGRAM':

@@ -28,6 +28,8 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 	private DrawableHandler drawHandler;
 	private JComboBox<String> pointsetCB;
 	private JComboBox<String> linelistCB;
+	private JTextField sigmafield;
+	private JTextField kernelfield;
 
 	public LatticeInfoPane(){
 		setLayout(new SpringLayout());
@@ -73,24 +75,61 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 
 		c.gridx = 0;
 		c.gridy = 1;
+		c.gridwidth = 4;
 		c.fill = GridBagConstraints.BOTH;
-		JTextArea reqList = new JTextArea();
-		reqList.setEditable(false);
-		reqList.setText("Open Image of a TEM");
-		requirements.setLabelFor(reqList);
-		firstpane.add(reqList, c);
+		JLabel gaussian = new JLabel("Parameters for Gaussian Smoothing");
+		firstpane.add(gaussian, c);
 
 		c.gridx = 0;
 		c.gridy = 2;
+		c.gridwidth = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		JLabel sigmalabel = new JLabel("Sigma");
+		firstpane.add(sigmalabel, c);
+
+		c.gridx = 1;
+		c.gridy = 2;
+		c.gridwidth = 3;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		sigmafield = new JTextField("4");
+		firstpane.add(sigmafield, c);
+
+
+
+		c.gridx = 0;
+		c.gridy = 3;
+		c.gridwidth = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		JLabel kernellabel = new JLabel("Kernel Size");
+		firstpane.add(kernellabel, c);
+
+		c.gridx = 1;
+		c.gridy = 3;
+		c.gridwidth = 3;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		kernelfield = new JTextField("17");
+		firstpane.add(kernelfield, c);
+
+		c.gridx = 0;
+		c.gridy = 4;
+		c.gridwidth = 4;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		JButton calc = new JButton("Detect");
 		firstpane.add(calc, c);
 
 		calc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				double sigma = Double.parseDouble(sigmafield.getText());
+				int blocksize = Integer.parseInt(kernelfield.getText());
+				if(blocksize < 3 || blocksize%2==0){
+					System.out.println("Did not calculate");
+					return; //need to output stuff
+				}
 				comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
 										null,
-										null);
+										null,
+										sigma,
+										blocksize);
 			}
 		});
 
