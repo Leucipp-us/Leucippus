@@ -4,8 +4,9 @@ import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.gui.Plot;
 
-import java.awt.MenuBar;
+import java.awt.GridLayout;
 import java.awt.Menu;
+import java.awt.MenuBar;
 import java.awt.MenuItem;
 
 import java.util.ArrayList;
@@ -28,8 +29,71 @@ public class HistogramWindow extends JFrame {
 		setupMenus();
 		setupPlot();
 
+		setLayout(new GridLayout(3,3));
 		pack();
+	}
+
+	public void callback(ArrayList<int[]> hist) {
+		ri = hist.get(0);
+
+		ri = parseHists(ri).get(0);
+
+
+		double[] x = new double[ri.length];
+		double[] y = new double[ri.length];
+
+		for (int i = 0; i < ri.length; i++) {
+			x[i] = i;
+			y[i] = (double) ri[i];
+		}
+		plt.setLineWidth(7);
+		plt.setLimits(0,ri.length,0,getYMax(ri)+2);
+		plt.addPoints(x, y, Plot.CIRCLE);
+		plt.draw();
+
+		drawHistogram();
 		show();
+	}
+
+	private void displayRI() {
+		removeAll();
+
+		ArrayList<int[]> ris = parseHists(ri);
+		for (int[] hist : ris) {
+			ImagePlus imp = new ImagePlus();
+			Plot plt = new Plot("Region Hist", "Bins", "Intensity");
+			plt.setImagePlus(imp);
+
+			double[] x = new double[hist.length];
+			double[] y = new double[hist.length];
+
+			for (int i = 0; i < hist.length; i++) {
+				x[i] = i;
+				y[i] = (double) hist[i];
+			}
+			plt.setLineWidth(7);
+			plt.setLimits(0,ri.length,0,getYMax(ri)+2);
+			plt.addPoints(x, y, Plot.CIRCLE);
+			plt.draw();
+			imp.draw();
+			ImageCanvas imc = new ImageCanvas(imp);
+			add(imc);
+			imc.repaint();
+		}
+	}
+
+
+	private ArrayList<int[]> parseHists(int[] hists) {
+		int[] t;
+		ArrayList<int[]> ret = new ArrayList<int[]>();
+		for(int i = 0; i < 9; i++){
+			t = new int[8];
+			for(int j = 0; j < 8; j++) {
+				t[j] = hists[i*8 + j];
+			}
+			ret.add(t);
+		}
+		return ret;
 	}
 
 	private void setupMenus(){
@@ -57,10 +121,6 @@ public class HistogramWindow extends JFrame {
 		setMenuBar(menuBar);
 	}
 
-	private void callback(ArrayList<int[]> hist) {
-		ri = hist.get(0);
-	}
-
 	private void setupPlot(){
 		imp = new ImagePlus();
 		plt = new Plot("Hist", "Bins", "Intensity");
@@ -74,13 +134,18 @@ public class HistogramWindow extends JFrame {
 	}
 
 	private void drawHistogram(){
-		remove(ic);
-
 		//do stuff
 
 		plt.draw();
 		imp.draw();
-		add(ic);
+	}
+
+	private double getYMax(int[] arr){
+		int max = 0;
+		for(int i : arr) 
+			if (max < i) 
+				max = i;
+		return (double)max;
 	}
 	
 }

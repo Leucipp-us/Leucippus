@@ -25,6 +25,7 @@ public class Communicator implements Runnable {
 	private BufferedReader inStream;
 	private BufferedWriter outStream;
 	private DrawableHandler drawHandler;
+	private HistogramWindow currentWaiting;
 
 	public Communicator(){
 		drawHandler = null;
@@ -49,9 +50,10 @@ public class Communicator implements Runnable {
 
 				if(jmessage.get("type").equals("pointsets")){
 					parsePointSets(jmessage);
+				} else if (jmessage.get("type").equals("histogram")){
+					parseHistogram(jmessage);
 				}
 
-				// System.out.println(jmessage.toString());
 			}
 			System.out.println("exiting");
 			inStream.close();
@@ -186,7 +188,8 @@ public class Communicator implements Runnable {
 
 	public void getHistogram(BufferedImage image,
 								int[] point,
-								Object histwindow) {
+								HistogramWindow histwindow) {
+		currentWaiting = histwindow;
 		JSONObject message = new JSONObject();
 		message.put("type", "GET_HISTOGRAM");
 		//NEED TO SET CALLBACK FOR WINDOW AND SEND WINDOW ID
@@ -217,6 +220,11 @@ public class Communicator implements Runnable {
 		}
 	}
 
+	public void parseHistogram(JSONObject jmessage) {
+		ArrayList<int[]> hois = extractIntList(jmessage, "histogram");
+		currentWaiting.callback(hois);
+	}
+
 	private void parsePointSets(JSONObject jmessage) {
 		String name = "";
 		DrawablePointSet dps;
@@ -238,20 +246,23 @@ public class Communicator implements Runnable {
 	}
 
 	private ArrayList<int[]> extractIntList(JSONObject jo, String key){
-		ArrayList<int[]> intlist = new ArrayList<int[]>();
-		JSONArray ja = jo.getJSONArray(key);
+		if(!jo.isNull(key)){
+			ArrayList<int[]> intlist = new ArrayList<int[]>();
+			JSONArray ja = jo.getJSONArray(key);
 
-		for(int j = 0; j < ja.length(); j++){
+			for(int j = 0; j < ja.length(); j++){
 
-			JSONArray arr = ja.getJSONArray(j);
-			int[] in = new int[arr.length()];
+				JSONArray arr = ja.getJSONArray(j);
+				int[] in = new int[arr.length()];
 
-			for (int k = 0; k < arr.length(); k++) {
-				in[k] = (int) arr.getDouble(k);
+				for (int k = 0; k < arr.length(); k++) {
+					in[k] = (int) arr.getDouble(k);
+				}
+				intlist.add(in);
 			}
-			intlist.add(in);
+			return intlist;
 		}
-		return intlist;
+		return null;
 	}
 
 	private ArrayList<ArrayList<int[]>> extractPointLists(JSONObject jo, String key){

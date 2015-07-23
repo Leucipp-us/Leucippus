@@ -51,9 +51,9 @@ class Communicator(object):
 			image = imagedata.reshape((message['image']['height'],
 								message['image']['width'])).astype(np.uint8)
 
-			blt, imt = (message['histdata']['blocktype'],message['histdata']['imagetype'])
-			retset = self.con.getHistogram(image, point, blt, imt)
+			retset = self.con.getHistogram(image, point)
 			print json.dumps(retset)
+			sys.stdout.flush()
 
 		else:
 			print >> sys.stderr, message['type']

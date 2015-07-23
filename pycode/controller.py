@@ -38,13 +38,6 @@ class Controller(object):
 				'points': self.constrain().tolist(),
 			})
 
-
-		hois = HOI().run(image, pointsToSend['points'], imagemax=True)
-		hois = [a.tolist() for a in hois]
-		pointsToSend.update({
-			'hois'	: hois
-		})
-
 		pointsets = {}
 		pointsets['type'] = 'pointsets'
 		pointsets['pointsets'] = [pointsToSend]
@@ -63,11 +56,11 @@ class Controller(object):
 
 		return [v.tolist() for v in rfeatpts], [v.tolist() for v in admap]
 
-	def getHistogram(self, image, point, blt, imt):
+	def getHistogram(self, image, point):
 		hois = HOI().run(image, np.array([point]))
 
 		return {
 			'type'      : 'histogram',
 			'winid'     : 0,
-			'histogram' : hois[0].tolist()
+			'histogram' : hois.tolist()
 		}
