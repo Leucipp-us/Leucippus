@@ -28,16 +28,11 @@ public class HistogramWindow extends JFrame {
 		super("Histogram of Point");
 		setupMenus();
 		setupPlot();
-
-		setLayout(new GridLayout(3,3));
 		pack();
 	}
 
 	public void callback(ArrayList<int[]> hist) {
 		ri = hist.get(0);
-
-		ri = parseHists(ri).get(0);
-
 
 		double[] x = new double[ri.length];
 		double[] y = new double[ri.length];
@@ -46,6 +41,7 @@ public class HistogramWindow extends JFrame {
 			x[i] = i;
 			y[i] = (double) ri[i];
 		}
+
 		plt.setLineWidth(7);
 		plt.setLimits(0,ri.length,0,getYMax(ri)+2);
 		plt.addPoints(x, y, Plot.CIRCLE);

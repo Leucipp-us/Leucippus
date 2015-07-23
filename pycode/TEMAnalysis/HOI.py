@@ -30,10 +30,10 @@ class HOI:
                         istart = ystart + i * self.cellsy; iend = istart + self.cellsy
                         jstart = xstart + j * self.cellsx; jend = jstart + self.cellsx
                         
-                        bins, _ = np.histogram(image[istart:iend, jstart:jend], bins=8, range=(0, maximum))
-                        featureVector.append(bins)
-                featureVector = np.array(featureVector).reshape((self.blocksx*self.blocksy*8))
+                        blockval = np.mean(image[istart:iend, jstart:jend])
+                        featureVector.append(blockval)
+                featureVector = np.array(featureVector).reshape((self.blocksx*self.blocksy))
             else:
-                featureVector = np.array([-1] * (self.blocksx*self.blocksy*8))
+                featureVector = np.array([-1] * (self.blocksx*self.blocksy))
             feats.append(featureVector)
         return np.array(feats)
