@@ -1,6 +1,8 @@
 package plugGUI;
 
 import ij.gui.Roi;
+import ij.gui.Line;
+import ij.gui.OvalRoi;
 import ij.gui.Overlay;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
@@ -65,6 +67,12 @@ public class DrawableHandler implements TableModelListener,
 
 	public void tableChanged(TableModelEvent e){
 		redraw();
+	}
+
+	public void exit(){
+		imageP.setOverlay(null);
+		imageP.getCanvas().removeMouseListener(this);
+		imageP.getCanvas().removeMouseMotionListener(this);
 	}
 
 	public void getXYSelections() {
@@ -203,32 +211,31 @@ public class DrawableHandler implements TableModelListener,
 	public void redraw() {
 		//important to get ROI before the imageP is set
 		Roi roi = imageP.getRoi();
-		imageP.setImage(originalImage);
-		imp = imageP.getProcessor().convertToColorProcessor();
-		imageP.setProcessor(imp);
+		Overlay overlay = new Overlay();
 
 		ArrayList<DrawableItem> tl = pointList.getList();
 
-		imp.setLineWidth(9);
 		for (DrawableItem i : tl) {
 			DrawablePoint p = (DrawablePoint) i;
 			if (p.isDrawn()) {
-				imp.setColor(p.getColor());
-				imp.drawDot((int)p.getx(), (int)p.gety());
+				Roi r = new OvalRoi(p.getx()-4, p.gety()-4, 9, 9);
+				r.setFillColor(p.getColor());
+				overlay.add(r);
 			}
 		}
 
-		imp.setLineWidth(5);
 		tl = lineList.getList();
 		for (DrawableItem i : tl) {
 			DrawableLine l = (DrawableLine) i;
 			if(l.isDrawn()) {
-				imp.setColor(l.getColor());
-				imp.drawLine(
+				Line r = new Line(
 							(int)l.getStartX(),
 							(int)l.getStartY(),
 							(int)l.getEndX(),
 							(int)l.getEndY());
+				r.setFillColor(l.getColor());
+				r.setWidth(5);
+				overlay.add(r);
 			}
 		}
 
@@ -240,9 +247,9 @@ public class DrawableHandler implements TableModelListener,
 
 				DrawablePointSet dps = (DrawablePointSet) tl.get(p);
 				int[] arr = dps.getPoints().get(i);
-				imp.setLineWidth(9);
-				imp.setColor(getComplement(dps.getColor()));
-				imp.drawDot(arr[0], arr[1]);
+				Roi r = new OvalRoi(arr[0]-4, arr[1]-4, 9, 9);
+				r.setFillColor(getComplement(dps.getColor()));
+				overlay.add(r);
 			}
 		}
 
@@ -252,17 +259,17 @@ public class DrawableHandler implements TableModelListener,
 				for(int i = 0; i < ps.getPoints().size(); i++) {
 					int[] arr  = ps.getPoints().get(i);
 
-					if(ps.getFeatures() != null && ps.getAdmap() != null){
+					// if(ps.getFeatures() != null && ps.getAdmap() != null){
 
-						if(checkInCircle(arr[0],arr[1], 7)){
-							imp.setLineWidth(1);
-							imp.setColor(getComplement(ps.getColor()));
-							drawLineSet(arr, ps.getFeatures().get(i));
-						}
-						imp.setColor(getHalfComplement(ps.getColor()));
-						imp.setLineWidth(1);
-						drawLineSet(arr, ps.getAdmap().get(i));
-					}
+					// 	if(checkInCircle(arr[0],arr[1], 7)){
+					// 		imp.setLineWidth(1);
+					// 		imp.setColor(getComplement(ps.getColor()));
+					// 		drawLineSet(arr, ps.getFeatures().get(i));
+					// 	}
+					// 	imp.setColor(getHalfComplement(ps.getColor()));
+					// 	imp.setLineWidth(1);
+					// 	drawLineSet(arr, ps.getAdmap().get(i));
+					// }
 
 					if(roi != null && isRoiResizing){
 						if( (roi.getType() == 0 && roi.contains(arr[0],arr[1])) ||
@@ -271,20 +278,20 @@ public class DrawableHandler implements TableModelListener,
 																	arr[0],
 																	arr[1],
 																	7)) ) {
-							imp.setLineWidth(9);
-							imp.setColor(getComplement(ps.getColor()));
-							imp.drawDot(arr[0], arr[1]);
+							Roi r = new OvalRoi(arr[0]-4, arr[1]-4, 9, 9);
+							r.setFillColor(getComplement(ps.getColor()));
+							overlay.add(r);
 						}
 					}
-
-					imp.setLineWidth(5);
-					imp.setColor(ps.getColor());
-					imp.drawDot(arr[0], arr[1]);
+					Roi r = new OvalRoi(arr[0]-2, arr[1]-2, 5, 5);
+					r.setFillColor(ps.getColor());
+					overlay.add(r);
 				}
 			}
 		}
 		if (roi != null)
 			imageP.setRoi(roi);
+		imageP.setOverlay(overlay); 
 		imageP.repaintWindow();
 	}
 

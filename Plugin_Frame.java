@@ -68,6 +68,7 @@ public class Plugin_Frame extends PlugInFrame {
 		this.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e) {
 				comm.exit();
+				drawHandler.exit();
 				drawHandler.showOriginalImage();
 			}
 		});
