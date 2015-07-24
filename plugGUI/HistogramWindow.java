@@ -4,14 +4,17 @@ import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.gui.Plot;
 
-import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
+import java.awt.image.BufferedImage;
 
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.ImageIcon;
 
 public class HistogramWindow extends JFrame {
 	private MenuBar menuBar;
@@ -24,58 +27,47 @@ public class HistogramWindow extends JFrame {
 	private int[] rc;
 	private int[] cc;
 
+	private BufferedImage riHist;
+
 	public HistogramWindow () {
 		super("Histogram of Point");
 		setupMenus();
-		setupPlot();
-		pack();
+		// setupPlot();
 	}
 
-	public void callback(ArrayList<int[]> hist) {
-		ri = hist.get(0);
+	// public void callback(ArrayList<int[]> hist) {
+	// 	ri = hist.get(0);
 
-		double[] x = new double[ri.length];
-		double[] y = new double[ri.length];
+	// 	double[] x = new double[ri.length];
+	// 	double[] y = new double[ri.length];
 
-		for (int i = 0; i < ri.length; i++) {
-			x[i] = i;
-			y[i] = (double) ri[i];
-		}
+	// 	for (int i = 0; i < ri.length; i++) {
+	// 		x[i] = i;
+	// 		y[i] = (double) ri[i];
+	// 	}
 
-		plt.setLineWidth(7);
-		plt.setLimits(0,ri.length,0,getYMax(ri)+2);
-		plt.addPoints(x, y, Plot.CIRCLE);
-		plt.draw();
+	// 	plt.setLineWidth(7);
+	// 	plt.setLimits(0,ri.length,0,getYMax(ri)+2);
+	// 	plt.addPoints(x, y, Plot.CIRCLE);
+	// 	plt.draw();
 
-		drawHistogram();
+	// 	drawHistogram();
+	// 	show();
+	// }
+
+	public void callback(ArrayList<BufferedImage> hists){
+		riHist = hists.get(0);
+
+		displayRI();
+		pack();
 		show();
 	}
 
 	private void displayRI() {
-		removeAll();
-
-		ArrayList<int[]> ris = parseHists(ri);
-		for (int[] hist : ris) {
-			ImagePlus imp = new ImagePlus();
-			Plot plt = new Plot("Region Hist", "Bins", "Intensity");
-			plt.setImagePlus(imp);
-
-			double[] x = new double[hist.length];
-			double[] y = new double[hist.length];
-
-			for (int i = 0; i < hist.length; i++) {
-				x[i] = i;
-				y[i] = (double) hist[i];
-			}
-			plt.setLineWidth(7);
-			plt.setLimits(0,ri.length,0,getYMax(ri)+2);
-			plt.addPoints(x, y, Plot.CIRCLE);
-			plt.draw();
-			imp.draw();
-			ImageCanvas imc = new ImageCanvas(imp);
-			add(imc);
-			imc.repaint();
-		}
+		getContentPane().setLayout(new FlowLayout());
+		getContentPane().add(new JLabel(new ImageIcon(riHist)));
+		
+		repaint();
 	}
 
 

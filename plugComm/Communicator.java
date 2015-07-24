@@ -3,6 +3,8 @@ package plugComm;
 import plugGUI.*;
 import org.json.*;
 
+import java.awt.Point;
+import java.awt.image.Raster;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 
@@ -302,7 +304,40 @@ public class Communicator implements Runnable {
 
 	public void parseHistogram(JSONObject jmessage) {
 		ArrayList<int[]> hois = extractIntList(jmessage, "histogram");
-		currentWaiting.callback(hois);
+
+		ArrayList<BufferedImage> histplots = new ArrayList<BufferedImage>();
+		JSONArray jahists = jmessage.getJSONArray("histograms");
+		for(int i = 0; i < jahists.length(); i++) {
+			JSONArray jaImg = jahists.getJSONArray(i);
+			BufferedImage img = parseImage(jaImg);
+			histplots.add(img);
+		}
+
+		currentWaiting.callback(histplots);
+	}
+
+	public BufferedImage parseImage(JSONArray jaImg) {
+		int rows = jaImg.length();
+		int cols = jaImg.getJSONArray(0).length();
+		byte[] idata = new byte[rows*cols*3];
+		for(int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				JSONArray pixel = jaImg.getJSONArray(i).getJSONArray(j);
+				idata[i*cols*3 + j*3    ] = (byte)pixel.getInt(0);
+				idata[i*cols*3 + j*3 + 1] = (byte)pixel.getInt(1);
+				idata[i*cols*3 + j*3 + 2] = (byte)pixel.getInt(2);
+			}
+		}
+		BufferedImage img = new BufferedImage(cols,
+											 rows,
+											 BufferedImage.TYPE_3BYTE_BGR);
+
+		img.setData(
+			Raster.createRaster(
+				img.getSampleModel(),
+				new DataBufferByte(idata, idata.length),
+				new Point()));
+		return img;
 	}
 
 	private void parsePointSets(JSONObject jmessage) {

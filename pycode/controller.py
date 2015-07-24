@@ -1,5 +1,8 @@
 import sys
+import cv2
+import tempfile
 import numpy as np
+import matplotlib.pyplot as plt
 from TEMAnalysis.AtomDetector import AtomDetector, DerivativeSegmenter
 from TEMAnalysis.AtomicProfiling import AtomProfiler
 from TEMAnalysis.AdjacencyDetector import AdjacencyDetector
@@ -66,8 +69,20 @@ class Controller(object):
 	def getHistogram(self, image, point):
 		hois = HOI().run(image, np.array([point]))
 
+		plotImages = []
+		with tempfile.NamedTemporaryFile(suffix=".png") as tmpfile:
+			for t in hois:
+				hoi = t.reshape((3,3))
+				f = plt.figure()
+				f.set_frameon(False)
+				plt.imshow(hoi, interpolation='none',cmap='gray')
+				plt.savefig(tmpfile.name)
+				plotImage = cv2.imread(tmpfile.name)
+				plotImages.append(plotImage.tolist())
+
 		return {
 			'type'      : 'histogram',
 			'winid'     : 0,
-			'histogram' : hois.tolist()
+			'histogram' : hois.tolist(),
+			'histograms': plotImages
 		}
