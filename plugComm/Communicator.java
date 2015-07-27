@@ -274,7 +274,6 @@ public class Communicator implements Runnable {
 		currentWaiting = histwindow;
 		JSONObject message = new JSONObject();
 		message.put("type", "GET_HISTOGRAM");
-		//NEED TO SET CALLBACK FOR WINDOW AND SEND WINDOW ID
 
 		byte[] idata = ((DataBufferByte) image.getData().getDataBuffer()).getData();
 
@@ -303,8 +302,6 @@ public class Communicator implements Runnable {
 	}
 
 	public void parseHistogram(JSONObject jmessage) {
-		ArrayList<int[]> hois = extractIntList(jmessage, "histogram");
-
 		ArrayList<BufferedImage> histplots = new ArrayList<BufferedImage>();
 		JSONArray jahists = jmessage.getJSONArray("histograms");
 		for(int i = 0; i < jahists.length(); i++) {
