@@ -8,6 +8,8 @@ import java.awt.FlowLayout;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.image.BufferedImage;
 
 import java.util.ArrayList;
@@ -17,21 +19,59 @@ import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 
 public class HistogramWindow extends JFrame {
+	private DrawableHandler drawHandler;
 	private MenuBar menuBar;
-	private ImagePlus imp;
 	private ImageCanvas ic;
-	private Plot plt;
+	private ImagePlus imp;
+	private int[] point;
+	public int blocksx;
+	public int blocksy;
+	public int cellsx;
+	public int cellsy;
 
 	private int[] ri;
 	private int[] ci;
 	private int[] rc;
 	private int[] cc;
 
+	public int type;
+
 	private BufferedImage riHist;
 
 	public HistogramWindow () {
 		super("Histogram of Point");
 		setupMenus();
+		blocksx = 3;
+		blocksy = 3;
+		cellsx = 3;
+		cellsy = 3;
+	}
+
+	public HistogramWindow (DrawableHandler drawHandler, int[] arr){
+		super("Histogram of Point");
+		setupMenus();
+		type = 0;
+
+		blocksx = 3;
+		blocksy = 3;
+		cellsx = 3;
+		cellsy = 3;
+
+		point = arr;
+		this.drawHandler = drawHandler;
+		this.addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e) {
+				exit();
+			}
+		});
+	}
+
+	public void exit() {
+		drawHandler.removeHist(this);
+	}
+
+	public int[] getPoint(){
+		return point;
 	}
 
 	public void callback(ArrayList<BufferedImage> hists){

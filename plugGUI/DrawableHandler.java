@@ -39,6 +39,7 @@ public class DrawableHandler implements TableModelListener,
 	private ArrayList<int[]> moved_selections;
 	private ArrayList<Integer> psindeces;
 	private ArrayList<Integer> indeces;
+	private ArrayList<HistogramWindow> hists;
 	private ImageProcessor imp;
 	private int roix;
 	private int roiy;
@@ -52,6 +53,7 @@ public class DrawableHandler implements TableModelListener,
 						   DrawableList pList, 
 						   DrawableList lList, 
 						   DrawableList psList) {
+		hists = new ArrayList<HistogramWindow>();
 		pointList = pList;
 		lineList = lList;
 		pointsetList = psList;
@@ -111,8 +113,17 @@ public class DrawableHandler implements TableModelListener,
 				roix = e.getX();
 				roiy = e.getY();
 			}
-
 		}
+	}
+
+	public void addHist(HistogramWindow hist) {
+		hists.add(hist);
+		redraw();
+	}
+
+	public void removeHist(HistogramWindow hist) {
+		hists.remove(hist);
+		redraw();
 	}
 
 	public ArrayList<int[]> getSelections(){
@@ -142,7 +153,6 @@ public class DrawableHandler implements TableModelListener,
 						p[1] = (int)roi.getBounds().getY() - roiy + op[1];
 					}
 				}
-
 			} else if (roi.getType() == 10) {
 				if (roi.getState() == 4) {
 					//moving
@@ -239,6 +249,23 @@ public class DrawableHandler implements TableModelListener,
 			}
 		}
 
+		for(HistogramWindow hw : hists) {
+			int[] point = hw.getPoint();
+			int colsize = hw.blocksx * hw.cellsx;
+			int rowsize = hw.blocksy * hw.cellsy;
+			if(hw.type == 0) {
+				int hcolsize = colsize/2;
+				int hrowsize = rowsize/2;
+				Roi r = new Roi(point[0] - hcolsize,
+								  point[1] - hrowsize,
+								  colsize,
+								  rowsize);
+				r.setStrokeColor(new Color(0,255,0));
+				overlay.add(r);
+			}
+		}
+
+
 		tl = pointsetList.getList();
 		if (roi != null && !isRoiResizing) {
 			for (int j = 0; j < indeces.size(); j++) {
@@ -247,9 +274,20 @@ public class DrawableHandler implements TableModelListener,
 
 				DrawablePointSet dps = (DrawablePointSet) tl.get(p);
 				int[] arr = dps.getPoints().get(i);
-				Roi r = new OvalRoi(arr[0]-4, arr[1]-4, 9, 9);
-				r.setFillColor(getComplement(dps.getColor()));
-				overlay.add(r);
+
+				boolean draw = true;
+				for (HistogramWindow hw : hists) {
+					if(arr == hw.getPoint()) {
+						draw = false;
+						break;
+					}
+				}
+
+				if(!draw) {
+					Roi r = new OvalRoi(arr[0]-4, arr[1]-4, 9, 9);
+					r.setFillColor(getComplement(dps.getColor()));
+					overlay.add(r);
+				}
 			}
 		}
 
@@ -259,18 +297,15 @@ public class DrawableHandler implements TableModelListener,
 				for(int i = 0; i < ps.getPoints().size(); i++) {
 					int[] arr  = ps.getPoints().get(i);
 
-					// if(ps.getFeatures() != null && ps.getAdmap() != null){
+					boolean draw = true;
+					for (HistogramWindow hw : hists) {
+						if(arr == hw.getPoint()) {
+							draw = false;
+							break;
+						}
+					}
 
-					// 	if(checkInCircle(arr[0],arr[1], 7)){
-					// 		imp.setLineWidth(1);
-					// 		imp.setColor(getComplement(ps.getColor()));
-					// 		drawLineSet(arr, ps.getFeatures().get(i));
-					// 	}
-					// 	imp.setColor(getHalfComplement(ps.getColor()));
-					// 	imp.setLineWidth(1);
-					// 	drawLineSet(arr, ps.getAdmap().get(i));
-					// }
-
+					if (!draw) continue;
 					if(roi != null && isRoiResizing){
 						if( (roi.getType() == 0 && roi.contains(arr[0],arr[1])) ||
 							(roi.getType() == 10 && checkInCircle((int) roi.getXBase(),

@@ -72,9 +72,7 @@ public class Plugin_Frame extends PlugInFrame {
 				drawHandler.showOriginalImage();
 			}
 		});
-
 		
-
 		show();
 	}
 
@@ -216,7 +214,9 @@ public class Plugin_Frame extends PlugInFrame {
         		//
         		comm.getHistogram(drawHandler.getGrayScaleOriginal(),
         							sels.get(0),
-        							new HistogramWindow());
+        							new HistogramWindow(
+        											drawHandler,
+        											sels.get(0)));
         	}
         });
         t.add(mi);

@@ -67,15 +67,29 @@ class Controller(object):
 		return [v.tolist() for v in rfeatpts], [v.tolist() for v in admap]
 
 	def getHistogram(self, image, point):
-		hois = HOI().run(image, np.array([point]))
+		hoiMaker = HOI.usingBlocks(3,3,3,3)
+		hois = hoiMaker.run(image, np.array([point]))
 
 		plotImages = []
 		with tempfile.NamedTemporaryFile(suffix=".png") as tmpfile:
 			for t in hois:
-				hoi = t.reshape((3,3))
+				hoi = t.reshape((hoiMaker.blocksx,
+								hoiMaker.blocksy))
 				f = plt.figure()
 				f.set_frameon(False)
-				plt.imshow(hoi, interpolation='none',cmap='gray')
+
+				for i in range(0, hoi.shape[0]):
+					for k in range(0, hoi.shape[1]):
+						plt.text(k, i, 
+							str(round(hoi[i,k])),
+							bbox={
+							'facecolor':'white',
+							'edgecolor':'white',
+							'alpha':0.5
+							})
+
+				plt.axis('off')
+				plt.imshow(hoi, interpolation='none', vmin=0, vmax=255)
 				plt.savefig(tmpfile.name)
 				plotImage = cv2.imread(tmpfile.name)
 				plotImages.append(plotImage.tolist())

@@ -7,6 +7,15 @@ class HOI:
         self.cellsx = 3
         self.cellsy = 3
         
+    @classmethod
+    def usingBlocks(cls, bx, by, cx, cy):
+        h = HOI()
+        h.blocksx = bx
+        h.blocksy = by
+        h.cellsx = cx
+        h.cellsy = cy
+        return h
+        
     def run(self, image, points, imagemax=False):
         maximum = 255
         if imagemax:

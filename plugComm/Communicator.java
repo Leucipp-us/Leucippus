@@ -291,6 +291,10 @@ public class Communicator implements Runnable {
 		JSONObject histData = new JSONObject();
 		histData.put("blocktype", 'r');
 		histData.put("imagetype", 'i');
+		histData.put("blocksx", histwindow.blocksx);
+		histData.put("blocksy", histwindow.blocksy);
+		histData.put("cellsx", histwindow.cellsx);
+		histData.put("cellsy", histwindow.cellsy);
 		message.put("histdata", histData);
 
 		try {
@@ -299,6 +303,8 @@ public class Communicator implements Runnable {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+
+		drawHandler.addHist(histwindow);
 	}
 
 	public void parseHistogram(JSONObject jmessage) {
