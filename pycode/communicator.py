@@ -47,6 +47,7 @@ class Communicator(object):
 											message['blocksize'])
 			print json.dumps(retset)
 			sys.stdout.flush()
+
 		elif message['type'] == 'GET_HISTOGRAM':
 			point = np.array(message['point']['data'])
 			imagedata = np.array(message['image']['data'])
@@ -54,6 +55,20 @@ class Communicator(object):
 								message['image']['width'])).astype(np.uint8)
 
 			retset = self.con.getHistogram(image, point)
+			print json.dumps(retset)
+			sys.stdout.flush()
+
+		elif message['type'] == 'IMAGE':
+			imagedata = np.array(message['image']['data'])
+			image = imagedata.reshape((message['image']['height'],
+								message['image']['width'])).astype(np.uint8)
+
+			self.con.setImage(image)
+
+		elif message['type'] == 'UPDATE_HISTOGRAM':
+			point = np.array(message['point']['data'])
+
+			retset = self.con.updateHistogram(point, message['histdata'])
 			print json.dumps(retset)
 			sys.stdout.flush()
 

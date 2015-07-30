@@ -39,6 +39,7 @@ public class Communicator implements Runnable {
 
 	public void run() {
 		setupProcess();
+		sendImage();
 		JSONObject jmessage = null;
 		JSONTokener jsonReader = null;
 
@@ -307,6 +308,34 @@ public class Communicator implements Runnable {
 		drawHandler.addHist(histwindow);
 	}
 
+	public void updateHistogram(HistogramWindow histwindow){
+		currentWaiting = histwindow;
+		JSONObject message = new JSONObject();
+		message.put("type", "UPDATE_HISTOGRAM");
+
+		JSONObject jsonPoint = new JSONObject();
+		jsonPoint.put("data", histwindow.point);
+		message.put("point", jsonPoint);
+
+		JSONObject histData = new JSONObject();
+		histData.put("blocktype", 'r');
+		histData.put("imagetype", 'i');
+		histData.put("bx", histwindow.blocksx);
+		histData.put("by", histwindow.blocksy);
+		histData.put("cx", histwindow.cellsx);
+		histData.put("cy", histwindow.cellsy);
+		message.put("histdata", histData);
+
+		try {
+			outStream.write(message.toString() + "\n");
+			outStream.flush();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
+		drawHandler.addHist(histwindow);
+	}
+
 	public void parseHistogram(JSONObject jmessage) {
 		ArrayList<BufferedImage> histplots = new ArrayList<BufferedImage>();
 		JSONArray jahists = jmessage.getJSONArray("histograms");
@@ -403,6 +432,30 @@ public class Communicator implements Runnable {
 			return pointlist;
 		}
 		return null;
+	}
+
+	private void sendImage() {
+		if(drawHandler == null)
+			return;
+
+		BufferedImage image = drawHandler.getGrayScaleOriginal();
+		byte[] idata = ((DataBufferByte) image.getData().getDataBuffer()).getData();
+
+		JSONObject message = new JSONObject();
+		message.put("type", "IMAGE");
+
+		JSONObject jsonImage = new JSONObject();
+		jsonImage.put("data", idata);
+		jsonImage.put("height", image.getHeight());
+		jsonImage.put("width", image.getWidth());
+		message.put("image", jsonImage);
+
+		try {
+			outStream.write(message.toString() + "\n");
+			outStream.flush();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 
 	private void setupProcess() {

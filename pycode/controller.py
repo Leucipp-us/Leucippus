@@ -19,6 +19,9 @@ class Controller(object):
 		self.adjD = None
 		return
 
+	def setImage(self, image):
+		self.image = image
+
 	def setBondlength(self, bondlength):
 		self.bondlength = bondlength
 
@@ -69,6 +72,45 @@ class Controller(object):
 	def getHistogram(self, image, point):
 		hoiMaker = HOI.usingBlocks(3,3,3,3)
 		hois = hoiMaker.run(image, np.array([point]))
+
+		plotImages = []
+		with tempfile.NamedTemporaryFile(suffix=".png") as tmpfile:
+			for t in hois:
+				hoi = t.reshape((hoiMaker.blocksx,
+								hoiMaker.blocksy))
+				f = plt.figure()
+				f.set_frameon(False)
+
+				for i in range(0, hoi.shape[0]):
+					for k in range(0, hoi.shape[1]):
+						plt.text(k, i, 
+							str(round(hoi[i,k])),
+							bbox={
+							'facecolor':'white',
+							'edgecolor':'white',
+							'alpha':0.5
+							})
+
+				plt.axis('off')
+				plt.imshow(hoi, interpolation='none', vmin=0, vmax=255)
+				plt.savefig(tmpfile.name)
+				plotImage = cv2.imread(tmpfile.name)
+				plotImages.append(plotImage.tolist())
+
+		return {
+			'type'      : 'histogram',
+			'winid'     : 0,
+			'histogram' : hois.tolist(),
+			'histograms': plotImages
+		}
+
+	def updateHistogram(self, point, histinfo):
+		hoiMaker = HOI.usingBlocks(histinfo['bx'],
+									histinfo['by'],
+									histinfo['cx'],
+									histinfo['cy'])
+
+		hois = hoiMaker.run(self.image, np.array([point]))
 
 		plotImages = []
 		with tempfile.NamedTemporaryFile(suffix=".png") as tmpfile:
