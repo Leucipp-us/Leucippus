@@ -91,7 +91,7 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 		c.gridy = 2;
 		c.gridwidth = 3;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		sigmafield = new JTextField("4");
+		sigmafield = new JTextField("0");
 		firstpane.add(sigmafield, c);
 
 

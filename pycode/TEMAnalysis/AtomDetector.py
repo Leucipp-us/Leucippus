@@ -4,6 +4,7 @@ import cv2
 import matplotlib.pyplot as mpl
 import math
 import copy
+import sys
 
 class Segmenter(object):
 # This class will be the default segmenter for the atom detector
@@ -58,7 +59,8 @@ class DerivativeSegmenter(object):
         c &= con(np.array([[0,-1,0],[0,0,0],[0,1,0]]))
         c &= con(np.array([[-1,0,0],[0,0,0],[0,0,1]]))
         c &= con(np.array([[0,0,0],[-1,0,1],[0,0,0]]))
-        return c.astype(np.uint8)
+        c[c==1] = 255
+        return cv2.morphologyEx(c.astype(np.uint8), cv2.MORPH_DILATE, np.ones((3,3), np.uint8))
         
 
 class AtomDetector(object):
@@ -94,12 +96,14 @@ class AtomDetector(object):
         contours, _ = cv2.findContours(segImg.copy(),
                                         cv2.RETR_EXTERNAL,
                                         cv2.CHAIN_APPROX_NONE)
-        
+        cv2.imshow('seg2',segImg)
+        cv2.waitKey(500)
+
         for cnt in contours:
             M = cv2.moments(cnt)
-            if M['m00'] >= 1.0:
+            if M['m00'] > 0.0:
                 c = np.squeeze(cnt)
-                cv2.fillConvexPoly(segImg, c[ConvexHull(c).vertices], 1)
+                cv2.fillConvexPoly(segImg, c[ConvexHull(c).vertices], 255)
             else:
                 cv2.fillConvexPoly(segImg, cnt, 0)
 
@@ -107,17 +111,24 @@ class AtomDetector(object):
                                         cv2.RETR_EXTERNAL,
                                         cv2.CHAIN_APPROX_NONE)        
 
-        
         conts = []
         centers = []
         for cnt in contours:
             M = cv2.moments(cnt)
-            if M['m00'] >= 1.0:
+            if M['m00'] > 0.0:
                 centers.append(np.array((int(M['m10']/M['m00']), int(M['m01']/M['m00']))))
                 conts.append(cnt)
-        
+
         self.segImg = segImg
         self.points = np.array(centers)
         self.contours = np.array(conts)
         return self.points
+
+    def __invertBinary(self, binimg):
+        ones = binimg == 255
+        zeros  = binimg == 0
+        retimg = binimg.copy()
+        retimg[zeros] = 255
+        retimg[ones] = 0
+        return retimg
 

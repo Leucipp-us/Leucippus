@@ -197,7 +197,7 @@ def grabPointsAndContours(segImg):
     
     for cnt in contours:
         M = cv2.moments(cnt)
-        if M['m00'] >= 1.0:
+        if M['m00'] > 0.0:
             c = np.squeeze(cnt)
             cv2.fillConvexPoly(segImg, c[ConvexHull(c).vertices], 1)
         else:
@@ -209,7 +209,7 @@ def grabPointsAndContours(segImg):
     centers = []
     for cnt in contours:
         M = cv2.moments(cnt)
-        if M['m00'] >= 1.0:
+        if M['m00'] > 0.0:
             centers.append(np.array((int(M['m10']/M['m00']), int(M['m01']/M['m00']))))
             conts.append(cnt)
         
