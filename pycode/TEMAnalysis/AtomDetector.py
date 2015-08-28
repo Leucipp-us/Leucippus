@@ -45,11 +45,10 @@ class DerivativeSegmenter(object):
         
 
         def con(k):
-            c = convolve(convolve(fimage, k, mode='constant', cval=0),
+            c = convolve(convolve(fimage, k, mode='nearest'),
                          k, 
-                         mode='constant',
-                         cval=0) < (0 + bias)
-            return cv2.morphologyEx(c.astype(np.uint8), cv2.MORPH_OPEN, np.ones((5,5),np.uint8))
+                         mode='nearest') <= (0 + bias)
+            return cv2.morphologyEx(c.astype(np.uint8), cv2.MORPH_OPEN, np.ones((3,3),np.uint8))
 
         c  = con(np.array([[0,0,1],[0,0,0],[-1,0,0]]))
         c &= con(np.array([[0,1,0],[0,0,0],[0,-1,0]]))
@@ -96,8 +95,6 @@ class AtomDetector(object):
         contours, _ = cv2.findContours(segImg.copy(),
                                         cv2.RETR_EXTERNAL,
                                         cv2.CHAIN_APPROX_NONE)
-        cv2.imshow('seg2',segImg)
-        cv2.waitKey(500)
 
         for cnt in contours:
             M = cv2.moments(cnt)
@@ -123,12 +120,3 @@ class AtomDetector(object):
         self.points = np.array(centers)
         self.contours = np.array(conts)
         return self.points
-
-    def __invertBinary(self, binimg):
-        ones = binimg == 255
-        zeros  = binimg == 0
-        retimg = binimg.copy()
-        retimg[zeros] = 255
-        retimg[ones] = 0
-        return retimg
-

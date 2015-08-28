@@ -35,7 +35,7 @@ def maximaFilter(pointset, maxima):
     distMat = cdist(maxima,pointset)
     i1 = np.argmin(distMat, axis=0)
     i2 = np.arange(0,distMat.shape[1])
-    localMaxViolators = np.where(distMat[i1,i2] > (0.25 * 10.0))
+    localMaxViolators = np.where(distMat[i1,i2] > 5)
     return localMaxViolators[0]
 
 def contourFilter(image, pointset, contours, maxima):
@@ -193,17 +193,7 @@ def contourMaximaConstrain(image, points, contours):
 
 def grabPointsAndContours(segImg):
     from scipy.spatial import ConvexHull
-    contours, _ = cv2.findContours(segImg.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
-    
-    for cnt in contours:
-        M = cv2.moments(cnt)
-        if M['m00'] > 0.0:
-            c = np.squeeze(cnt)
-            cv2.fillConvexPoly(segImg, c[ConvexHull(c).vertices], 1)
-        else:
-            cv2.fillConvexPoly(segImg, cnt, 0)
-
-    contours, _ = cv2.findContours(segImg.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)        
+    contours, _ = cv2.findContours(segImg.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)       
     
     conts = []
     centers = []
