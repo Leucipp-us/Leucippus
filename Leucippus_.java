@@ -43,7 +43,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JTabbedPane;
 
 
-public class Plugin_Frame extends PlugInFrame {
+public class Leucippus_ extends PlugInFrame {
 	private ImagePlus imp;
 	private DrawableList pointList;
 	private DrawableList lineList;
@@ -57,8 +57,8 @@ public class Plugin_Frame extends PlugInFrame {
 	private boolean showPointsMessage;
 	private LatticeInfoPane latticeInfoPane;
 
-	public Plugin_Frame() {
-		super("Placeholder");
+	public Leucippus_() {
+		super("Leucippus");
 		showbondlengthmessage = true;
 		showPointsMessage = true;
 		imp = IJ.getImage();
@@ -92,14 +92,14 @@ public class Plugin_Frame extends PlugInFrame {
 		c.gridy = 3;
 		add(removeItemButton, c);
 
-		
+
 		removeItemButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	if (tabPane.getSelectedIndex()==0)
             		return;
 
             	JScrollPane scrollPane = (JScrollPane)tabPane.getSelectedComponent();
-            	JViewport viewport = scrollPane.getViewport(); 
+            	JViewport viewport = scrollPane.getViewport();
             	DrawableList tempList = (DrawableList) viewport.getView();
             	int row = tempList.getSelectedRow();
             	if (row != -1) {
@@ -141,10 +141,6 @@ public class Plugin_Frame extends PlugInFrame {
         t.add(mi);
 
         tt = new Menu("Save Detections");
-        mi = new MenuItem("as pdb");
-        tt.add(mi);
-        mi = new MenuItem("as cif");
-        tt.add(mi);
         mi = new MenuItem("as xyz");
         tt.add(mi);
         t.add(tt);
@@ -201,62 +197,61 @@ public class Plugin_Frame extends PlugInFrame {
         t.add(tt);
         menuBar.add(t);
 
-        t = new Menu("Analysis");
-        mi = new MenuItem("Histogram");
-        mi.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e){
-        		ArrayList<int[]> sels = drawHandler.getSelections();
-        		if (sels.size() != 1){
-        			//output to user that only one point can be selected
-        			System.out.println(sels.size());
-        			return;
-        		}
-        		//
-        		comm.getHistogram(drawHandler.getGrayScaleOriginal(),
-        							sels.get(0),
-        							new HistogramWindow(
-        											comm,
-        											drawHandler,
-        											sels.get(0)));
-        	}
-        });
-        t.add(mi);
-
-        mi = new MenuItem("Initial Detections");
-        mi.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
-            							null,
-            							null);
-            	if(showbondlengthmessage) {
-            		JOptionPane.showMessageDialog(null, "You can add a bondlength and select Constrain Detection Set to get more accurate results");
-            		showbondlengthmessage = false;
-            	}
-            	
-            }
-        });
-        t.add(mi);
-        mi = new MenuItem("Constrain Detection Set");
-        mi.addActionListener(new ActionListener(){
-        	public void actionPerformed(ActionEvent e) {
-        		if (lineList.getLength() < 1) {
-        			JOptionPane.showMessageDialog(null, "Please Specify a bondlength to use this tool.");
-        		}else{
-        			comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
-            							null,
-            							lineList);
-        			if(showPointsMessage){
-        				JOptionPane.showMessageDialog(null, "For even more accurate results specify which atoms are either incorrect or missing.");
-        				showPointsMessage = false;
-        			}
-        		}
-        	}
-        });
-        t.add(mi);
-
-        mi = new MenuItem("Calculate Using user data");
-        t.add(mi);
-        menuBar.add(t);
+        // t = new Menu("Analysis");
+        // mi = new MenuItem("Histogram");
+        // mi.addActionListener(new ActionListener() {
+        // 	public void actionPerformed(ActionEvent e){
+        // 		ArrayList<int[]> sels = drawHandler.getSelections();
+        // 		if (sels.size() != 1){
+        // 			//output to user that only one point can be selected
+        // 			System.out.println(sels.size());
+        // 			return;
+        // 		}
+        // 		comm.getHistogram(drawHandler.getGrayScaleOriginal(),
+        // 							sels.get(0),
+        // 							new HistogramWindow(
+        // 											comm,
+        // 											drawHandler,
+        // 											sels.get(0)));
+        // 	}
+        // });
+        // t.add(mi);
+				//
+        // mi = new MenuItem("Initial Detections");
+        // mi.addActionListener(new ActionListener() {
+        //     public void actionPerformed(ActionEvent e) {
+        //     	comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
+        //     							null,
+        //     							null);
+        //     	if(showbondlengthmessage) {
+        //     		JOptionPane.showMessageDialog(null, "You can add a bondlength and select Constrain Detection Set to get more accurate results");
+        //     		showbondlengthmessage = false;
+        //     	}
+				//
+        //     }
+        // });
+        // t.add(mi);
+        // mi = new MenuItem("Constrain Detection Set");
+        // mi.addActionListener(new ActionListener(){
+        // 	public void actionPerformed(ActionEvent e) {
+        // 		if (lineList.getLength() < 1) {
+        // 			JOptionPane.showMessageDialog(null, "Please Specify a bondlength to use this tool.");
+        // 		}else{
+        // 			comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
+        //     							null,
+        //     							lineList);
+        // 			if(showPointsMessage){
+        // 				JOptionPane.showMessageDialog(null, "For even more accurate results specify which atoms are either incorrect or missing.");
+        // 				showPointsMessage = false;
+        // 			}
+        // 		}
+        // 	}
+        // });
+        // t.add(mi);
+				//
+        // mi = new MenuItem("Calculate Using user data");
+        // t.add(mi);
+        // menuBar.add(t);
 		setMenuBar(menuBar);
 		setupLists(c);
 	}
@@ -266,8 +261,8 @@ public class Plugin_Frame extends PlugInFrame {
 		pointList = new DrawableList();
 		lineList = new DrawableList();
 		pointsetList = new DrawableList();
-		drawHandler = new DrawableHandler(imp, 
-										  pointList, 
+		drawHandler = new DrawableHandler(imp,
+										  pointList,
 										  lineList,
 										  pointsetList);
 		comm = new Communicator(drawHandler);
@@ -295,7 +290,7 @@ public class Plugin_Frame extends PlugInFrame {
 		Roi roi = imp.getRoi();
 		if (roi == null || roi.getType() != 10){
 			JOptionPane.showMessageDialog(null, "To add a point you need to use the imagej point select tool to select a point.");
-			return;//A popup should come up instead of the return
+			return;
 		}
 
 		JTextField name = new JTextField();
@@ -308,7 +303,7 @@ public class Plugin_Frame extends PlugInFrame {
 			if(pt == PointType.INCORRECT_ATOM){
 				if (pointsetList.getLength() == 0) {
 					JOptionPane.showMessageDialog(null, "You can't select an incorrect point without any pointsets.");
-					return;//A popup should come up instead of the return
+					return;
 				}
 				int [] sp = {(int)roi.getXBase(), (int)roi.getYBase()};
 				for(DrawableItem di :  pointsetList.getList()){
@@ -338,19 +333,19 @@ public class Plugin_Frame extends PlugInFrame {
 												roi.getXBase(),
 												roi.getYBase(),
 												pt);
-			
+
 
 				pointList.addItem(dPoint);
 			}
 
 
-			
-		} 
+
+		}
 	}
 
 	private void createLineDialog(LineType lt) {
 		Roi roi = imp.getRoi();
-		
+
 		if (roi == null || !roi.isLine()) {
 			JOptionPane.showMessageDialog(null, "To add a line you need to use the imagej line selection tool to select a line.");
 			return;

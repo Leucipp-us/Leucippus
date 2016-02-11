@@ -47,7 +47,7 @@ public class Communicator implements Runnable {
 			while(!quit) {
 				String line = inStream.readLine();
 				if (line == null) continue;
-				
+
 				jsonReader = new JSONTokener(line);
 				jmessage = new JSONObject(jsonReader);
 
@@ -145,7 +145,7 @@ public class Communicator implements Runnable {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-		
+
 		// System.out.println(jsonImage);
 
 	}
@@ -219,7 +219,7 @@ public class Communicator implements Runnable {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-		
+
 		// System.out.println(jsonImage);
 
 	}
@@ -459,7 +459,7 @@ public class Communicator implements Runnable {
 	}
 
 	private void setupProcess() {
-		ProcessBuilder pb = new ProcessBuilder("python", "/home/david/git/imagejplugin/pycode");
+		ProcessBuilder pb = new ProcessBuilder(System.getenv("HOME")+"/.conda/envs/python2/bin/python2", "/home/david/Documents/git/ImageJPlugin/pycode");
 		pb.redirectError(Redirect.INHERIT);
 		try {
 			pyProcess = pb.start();

@@ -1,7 +1,13 @@
 CLASSPATH = ".:ij.jar"
 
-all:
-	javac -classpath $(CLASSPATH) Plugin_Frame.java
+.PHONY: run clean
+.SILENT: run clean
 
-run: all
-	imagej ~/git/thesis-notebooks/images/graphene1.png
+all:
+	javac -classpath $(CLASSPATH) Leucippus_.java
+
+run:
+	imagej ~/Documents/git/thesis-notebooks/images/graphene1.png
+
+clean:
+	rm -f *.class */*.class

@@ -20,22 +20,21 @@ import javax.swing.event.TableModelListener;
 
 
 public class LatticeInfoPane extends JPanel implements TableModelListener{
-	private JPanel secondpane;
 	private Communicator comm;
 	private DrawableList pointlist;
 	private DrawableList linelist;
 	private DrawableList pointsetlist;
 	private DrawableHandler drawHandler;
-	private JComboBox<String> pointsetCB;
-	private JComboBox<String> linelistCB;
-	private JTextField sigmafield;
-	private JTextField kernelfield;
+	private JComboBox<String> pointsetCB = new JComboBox<String>();
+	private JComboBox<String> linelistCB = new JComboBox<String>();;
+	private JTextField sigmafield = new JTextField("4");
+	private JTextField kernelfield = new JTextField("17");
 
 	public LatticeInfoPane(){
 		setLayout(new SpringLayout());
 		setupFirstStep();
 		setupSecondStep();
-		SpringUtilities.makeCompactGrid(this, 
+		SpringUtilities.makeCompactGrid(this,
 										2, 2, 6, 6, 6, 6);
 	}
 
@@ -56,7 +55,7 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 		setLayout(new SpringLayout());
 		setupFirstStep();
 		setupSecondStep();
-		SpringUtilities.makeCompactGrid(this, 
+		SpringUtilities.makeCompactGrid(this,
 										2, 2, 6, 6, 6, 6);
 	}
 
@@ -68,52 +67,32 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 1.0;
 
-		c.gridx = 0;
-		c.gridy = 0;
-		JLabel requirements = new JLabel("Requirements");
-		firstpane.add(requirements, c);
+		c.gridx = 0; c.gridy = 0;
+		firstpane.add(new JLabel("Requirements"), c);
 
-		c.gridx = 0;
-		c.gridy = 1;
 		c.gridwidth = 4;
-		c.fill = GridBagConstraints.BOTH;
-		JLabel gaussian = new JLabel("Parameters for Gaussian Smoothing");
-		firstpane.add(gaussian, c);
+		c.gridx = 0; c.gridy = 1;
+		firstpane.add(new JLabel("Parameters for Gaussian Smoothing"), c);
 
-		c.gridx = 0;
-		c.gridy = 2;
 		c.gridwidth = 1;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		JLabel sigmalabel = new JLabel("Sigma");
-		firstpane.add(sigmalabel, c);
+		c.gridx = 0; c.gridy = 2;
+		firstpane.add(new JLabel("Sigma"), c);
 
-		c.gridx = 1;
-		c.gridy = 2;
 		c.gridwidth = 3;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		sigmafield = new JTextField("0");
+		c.gridx = 1; c.gridy = 2;
 		firstpane.add(sigmafield, c);
 
-
-
-		c.gridx = 0;
-		c.gridy = 3;
 		c.gridwidth = 1;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		JLabel kernellabel = new JLabel("Kernel Size");
-		firstpane.add(kernellabel, c);
+		c.gridx = 0; c.gridy = 3;
+		firstpane.add(new JLabel("Kernel Size"), c);
 
-		c.gridx = 1;
-		c.gridy = 3;
 		c.gridwidth = 3;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		kernelfield = new JTextField("17");
+		c.gridx = 1; c.gridy = 3;
 		firstpane.add(kernelfield, c);
 
-		c.gridx = 0;
-		c.gridy = 4;
+
 		c.gridwidth = 4;
-		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0; c.gridy = 4;
 		JButton calc = new JButton("Detect");
 		firstpane.add(calc, c);
 
@@ -122,7 +101,7 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 				double sigma = Double.parseDouble(sigmafield.getText());
 				int blocksize = Integer.parseInt(kernelfield.getText());
 				if(blocksize < 3 || blocksize%2==0){
-					System.out.println("Did not calculate");
+					//We will need a popup saying the exact needed specs of the kernel
 					return; //need to output stuff
 				}
 				comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
@@ -134,73 +113,46 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 		});
 
 		add(firstlabel);
-		firstlabel.setLabelFor(firstpane);
 		add(firstpane);
 	}
 
 	private void setupSecondStep() {
-		JLabel secondlabel = new JLabel("Step 2: Spatially Contrain Detections");
-		secondpane = new JPanel();
+		JPanel secondpane = new JPanel();
 		secondpane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 1.0;
 
-		c.gridx = 0;
-		c.gridy = 0;
-		JLabel requirements = new JLabel("Requirements");
-		secondpane.add(requirements, c);
+		c.gridx = 0; c.gridy = 0;
+		secondpane.add(new JLabel("Requirements"), c);
 
-		c.gridx = 0;
-		c.gridy = 1;
-		JLabel reqPointset = new JLabel("Set of Points");
-		secondpane.add(reqPointset, c);
+		c.gridx = 0; c.gridy = 1;
+		secondpane.add(new JLabel("Set of Points"), c);
 
-		ArrayList<String> tlist = new ArrayList<String>(pointsetlist.getList().size());
-		for (DrawableItem i : pointsetlist.getList()) {
-			tlist.add(i.getName());
-		}
-		String[] arr = new String[tlist.size()];
-
-		pointsetCB = new JComboBox<String>(tlist.toArray(arr));
-		c.gridx = 1;
-		c.gridy = 1;
+		c.gridx = 1; c.gridy = 1;
 		secondpane.add(pointsetCB, c);
 
-		JLabel reqbondlength = new JLabel("Bond Length");
-		tlist = new ArrayList<String>(linelist.getList().size());
-		for (DrawableItem i : linelist.getList()) {
-			tlist.add(i.getName());
-		}
-		arr = new String[tlist.size()];
+		c.gridx = 0; c.gridy = 2;
+		secondpane.add(new JLabel("Bond Length"), c);
 
-		
-		c.gridx = 0;
-		c.gridy = 2;
-		secondpane.add(reqbondlength, c);
-
-		linelistCB = new JComboBox<String>(tlist.toArray(arr));
-		c.gridx = 1;
-		c.gridy = 2;
+		c.gridx = 1; c.gridy = 2;
 		secondpane.add(linelistCB, c);
 
-		c.gridx = 0;
-		c.gridy = 3;
 		c.gridwidth = 2;
+		c.gridx = 0; c.gridy = 3;
 		JButton calc = new JButton("Constrain");
 		secondpane.add(calc,c);
 
 		calc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int selectedBondIndex = linelistCB.getSelectedIndex();
-				DrawableLine l = (DrawableLine)linelist.getList().get(selectedBondIndex);
-				comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
-										l);
+				comm.calculatePoints(
+					drawHandler.getGrayScaleOriginal(),
+					(DrawableLine)linelist.getList().get(linelistCB.getSelectedIndex())
+				);
 			}
 		});
 
-		add(secondlabel);
-		secondlabel.setLabelFor(secondpane);
+		add(new JLabel("Step 2: Spatially Contrain Detections"));
 		add(secondpane);
 	}
 
@@ -209,40 +161,12 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 	}
 
 	public void tableChanged(TableModelEvent e) {
-		refreshPointSetComboBox();
-		refreshLineSetComboBox();
-		secondpane.revalidate();
-	}
+		pointsetCB.removeAllItems();
+		for (DrawableItem i : pointsetlist.getList())
+			pointsetCB.addItem(i.getName());
 
-	private void refreshPointSetComboBox() {
-		secondpane.remove(pointsetCB);
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0;
-		ArrayList<String> pointsets = new ArrayList<String>(pointsetlist.getList().size());
-		for (DrawableItem i : pointsetlist.getList()) {
-			pointsets.add(i.getName());
-		}
-		String[] arr = new String[pointsets.size()];
-		pointsetCB = new JComboBox<String>(pointsets.toArray(arr));
-		c.gridx = 1;
-		c.gridy = 1;
-		secondpane.add(pointsetCB, c);
-	}
-
-	private void refreshLineSetComboBox() {
-		secondpane.remove(linelistCB);
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0;
-		ArrayList<String> lines = new ArrayList<String>(linelist.getList().size());
-		for (DrawableItem i : linelist.getList()) {
-			lines.add(i.getName());
-		}
-		String[] arr = new String[lines.size()];
-		linelistCB = new JComboBox<String>(lines.toArray(arr));
-		c.gridx = 1;
-		c.gridy = 2;
-		secondpane.add(linelistCB, c);
+		linelistCB.removeAllItems();
+		for (DrawableItem i : linelist.getList())
+			linelistCB.addItem(i.getName());
 	}
 }
