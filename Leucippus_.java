@@ -94,164 +94,108 @@ public class Leucippus_ extends PlugInFrame {
 
 
 		removeItemButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	if (tabPane.getSelectedIndex()==0)
-            		return;
+        public void actionPerformed(ActionEvent e) {
+        	if (tabPane.getSelectedIndex()==0)
+        		return;
 
-            	JScrollPane scrollPane = (JScrollPane)tabPane.getSelectedComponent();
-            	JViewport viewport = scrollPane.getViewport();
-            	DrawableList tempList = (DrawableList) viewport.getView();
-            	int row = tempList.getSelectedRow();
-            	if (row != -1) {
-            		tempList.removeItem(row);
-            	}
-            }
-        });
-
-        Menu t;
-        Menu tt;
-        MenuItem mi;
-        menuBar = new MenuBar();
-        t = new Menu("File");
-
-        mi = new MenuItem("Load Annotations");
-        mi.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		String filename = createFileSaveDialog();
-        		if (filename != null)
-        			AnnotationReader.read(filename,
-	        								pointList,
-	        								lineList,
-	        								pointsetList);
+        	JScrollPane scrollPane = (JScrollPane)tabPane.getSelectedComponent();
+        	JViewport viewport = scrollPane.getViewport();
+        	DrawableList tempList = (DrawableList) viewport.getView();
+        	int row = tempList.getSelectedRow();
+        	if (row != -1) {
+        		tempList.removeItem(row);
         	}
-        });
-        t.add(mi);
+        }
+    });
 
-        mi = new MenuItem("Save Annotations");
-        mi.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		String filename = createFileSaveDialog();
-        		if (filename != null)
-        			AnnotationWriter.write(filename,
-	        								pointList,
-	        								lineList,
-	        								pointsetList);
-        	}
-        });
-        t.add(mi);
+    Menu t;
+    Menu tt;
+    MenuItem mi;
+    menuBar = new MenuBar();
+    t = new Menu("File");
 
-        tt = new Menu("Save Detections");
-        mi = new MenuItem("as xyz");
-        tt.add(mi);
-        t.add(tt);
+    mi = new MenuItem("Load Annotations");
+    mi.addActionListener(new ActionListener() {
+    	public void actionPerformed(ActionEvent e) {
+    		String filename = createFileSaveDialog();
+    		if (filename != null)
+    			AnnotationReader.read(filename,
+      								pointList,
+      								lineList,
+      								pointsetList);
+    	}
+    });
+    t.add(mi);
+
+    mi = new MenuItem("Save Annotations");
+    mi.addActionListener(new ActionListener() {
+    	public void actionPerformed(ActionEvent e) {
+    		String filename = createFileSaveDialog();
+    		if (filename != null)
+    			AnnotationWriter.write(filename,
+      								pointList,
+      								lineList,
+      								pointsetList);
+    	}
+    });
+    t.add(mi);
+
+    tt = new Menu("Save Detections");
+    mi = new MenuItem("as xyz");
+    tt.add(mi);
+    t.add(tt);
 
 
-        mi = new MenuItem("Exit");
-        mi.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		close();
-        	}
-        });
-        t.add(mi);
-        menuBar.add(t);
+    mi = new MenuItem("Exit");
+    mi.addActionListener(new ActionListener() {
+    	public void actionPerformed(ActionEvent e) {
+    		close();
+    	}
+    });
+    t.add(mi);
+    menuBar.add(t);
 
-        t = new Menu("Edit");
-        tt = new Menu("Points");
-        mi = new MenuItem("Merge Points");
-        mi.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                drawHandler.mergeSelected();
-            }
-        });
-        tt.add(mi);
-        t.add(tt);
-        menuBar.add(t);
+    t = new Menu("Edit");
+    tt = new Menu("Points");
+    mi = new MenuItem("Merge Points");
+    mi.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            drawHandler.mergeSelected();
+        }
+    });
+    tt.add(mi);
+    t.add(tt);
+    menuBar.add(t);
 
-        t = new Menu("Insert");
-        tt = new Menu("Points");
-        mi = new MenuItem("Missing Point");
-        mi.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                createPointDialog(PointType.MISSING_ATOM);
-            }
-        });
-        tt.add(mi);
+    t = new Menu("Insert");
+    tt = new Menu("Points");
+    mi = new MenuItem("Missing Point");
+    mi.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            createPointDialog(PointType.MISSING_ATOM);
+        }
+    });
+    tt.add(mi);
 
-        mi = new MenuItem("Incorrect Point");
-        mi.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                createPointDialog(PointType.INCORRECT_ATOM);
-            }
-        });
-        tt.add(mi);
-        t.add(tt);
+    mi = new MenuItem("Incorrect Point");
+    mi.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            createPointDialog(PointType.INCORRECT_ATOM);
+        }
+    });
+    tt.add(mi);
+    t.add(tt);
 
-        tt = new Menu("Lines");
-        mi = new MenuItem("BondLength");
-        mi.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		createLineDialog(LineType.BONDLENGTH);
-        	}
-        });
-        tt.add(mi);
-        t.add(tt);
-        menuBar.add(t);
-
-        // t = new Menu("Analysis");
-        // mi = new MenuItem("Histogram");
-        // mi.addActionListener(new ActionListener() {
-        // 	public void actionPerformed(ActionEvent e){
-        // 		ArrayList<int[]> sels = drawHandler.getSelections();
-        // 		if (sels.size() != 1){
-        // 			//output to user that only one point can be selected
-        // 			System.out.println(sels.size());
-        // 			return;
-        // 		}
-        // 		comm.getHistogram(drawHandler.getGrayScaleOriginal(),
-        // 							sels.get(0),
-        // 							new HistogramWindow(
-        // 											comm,
-        // 											drawHandler,
-        // 											sels.get(0)));
-        // 	}
-        // });
-        // t.add(mi);
-				//
-        // mi = new MenuItem("Initial Detections");
-        // mi.addActionListener(new ActionListener() {
-        //     public void actionPerformed(ActionEvent e) {
-        //     	comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
-        //     							null,
-        //     							null);
-        //     	if(showbondlengthmessage) {
-        //     		JOptionPane.showMessageDialog(null, "You can add a bondlength and select Constrain Detection Set to get more accurate results");
-        //     		showbondlengthmessage = false;
-        //     	}
-				//
-        //     }
-        // });
-        // t.add(mi);
-        // mi = new MenuItem("Constrain Detection Set");
-        // mi.addActionListener(new ActionListener(){
-        // 	public void actionPerformed(ActionEvent e) {
-        // 		if (lineList.getLength() < 1) {
-        // 			JOptionPane.showMessageDialog(null, "Please Specify a bondlength to use this tool.");
-        // 		}else{
-        // 			comm.calculatePoints(drawHandler.getGrayScaleOriginal(),
-        //     							null,
-        //     							lineList);
-        // 			if(showPointsMessage){
-        // 				JOptionPane.showMessageDialog(null, "For even more accurate results specify which atoms are either incorrect or missing.");
-        // 				showPointsMessage = false;
-        // 			}
-        // 		}
-        // 	}
-        // });
-        // t.add(mi);
-				//
-        // mi = new MenuItem("Calculate Using user data");
-        // t.add(mi);
-        // menuBar.add(t);
+    tt = new Menu("Lines");
+    mi = new MenuItem("BondLength");
+    mi.addActionListener(new ActionListener() {
+    	public void actionPerformed(ActionEvent e) {
+    		createLineDialog(LineType.BONDLENGTH);
+    	}
+    });
+    tt.add(mi);
+    t.add(tt);
+    menuBar.add(t);
 		setMenuBar(menuBar);
 		setupLists(c);
 	}
@@ -277,11 +221,9 @@ public class Leucippus_ extends PlugInFrame {
 		tabPane.add("Lines", new JScrollPane(lineList));
 		tabPane.add("PointSets", new JScrollPane(pointsetList));
 
-		c.weightx = 1;
-		c.weighty = 1;
-		c.gridx = 0;
-		c.gridy = 2;
+
 		c.gridwidth = 2;
+		c.gridx = 0; c.gridy = 2;
 		c.fill = GridBagConstraints.BOTH;
 		add(tabPane,c);
 	}
@@ -293,25 +235,27 @@ public class Leucippus_ extends PlugInFrame {
 			return;
 		}
 
+		if(pt == PointType.INCORRECT_ATOM && pointsetList.getLength() == 9){
+			JOptionPane.showMessageDialog(this, "You can't select an incorrect point without any pointsets.");
+			return;
+		}
+
 		JTextField name = new JTextField();
 		final JComponent[] inputs = new JComponent[] {
 				new JLabel("Name"),
 				name
 		};
-		int n = JOptionPane.showConfirmDialog(null, inputs, "Add Point", JOptionPane.YES_NO_OPTION);
+
+		int n = JOptionPane.showConfirmDialog(this, inputs, "Add Point", JOptionPane.YES_NO_OPTION);
 		if (n == JOptionPane.YES_OPTION) {
 			if(pt == PointType.INCORRECT_ATOM){
-				if (pointsetList.getLength() == 0) {
-					JOptionPane.showMessageDialog(null, "You can't select an incorrect point without any pointsets.");
-					return;
-				}
-				int [] sp = {(int)roi.getXBase(), (int)roi.getYBase()};
 				for(DrawableItem di :  pointsetList.getList()){
 					if(di.isDrawn()){
 						boolean breakit = false;
 						DrawablePointSet dps = (DrawablePointSet)di;
 						for(int[] p : dps.getPoints()){
-							double dist = dps.distance(p, sp);
+							double dist = dps.distance(p, new int[]{(int)roi.getXBase(),
+																											(int)roi.getYBase()});
 							if (dist < 7.0){
 								DrawableItem dPoint = new DrawablePoint(
 												name.getText(),
@@ -328,77 +272,31 @@ public class Leucippus_ extends PlugInFrame {
 					}
 				}
 			} else {
-				DrawableItem dPoint = new DrawablePoint(
-												name.getText(),
-												roi.getXBase(),
-												roi.getYBase(),
-												pt);
-
-
-				pointList.addItem(dPoint);
+				pointList.addItem(new DrawablePoint(name.getText(),
+																						roi.getXBase(),
+																						roi.getYBase(),
+																						pt));
 			}
-
-
-
 		}
 	}
 
 	private void createLineDialog(LineType lt) {
 		Roi roi = imp.getRoi();
-
-		if (roi == null || !roi.isLine()) {
-			JOptionPane.showMessageDialog(null, "To add a line you need to use the imagej line selection tool to select a line.");
-			return;
-		}
-
-		Line line = (Line)roi;
-
-		JTextField name = new JTextField();
-		JTextField atom1 = new JTextField();
-		JTextField atom2 = new JTextField();
-		final JComponent[] inputs = new JComponent[] {
-			new JLabel("Name"),
-			name,
-			new JLabel("(For BondLengths)"),
-			new JLabel("Atom 1"),
-			atom1,
-			new JLabel("Atom 2"),
-			atom2
-		};
-
-		int n = JOptionPane.showConfirmDialog(null, inputs, "Add Line", JOptionPane.YES_NO_OPTION);
-		if (n == JOptionPane.YES_OPTION) {
-			DrawableItem dLine = null;
-
-			if (atom1.getText().length() == 0 || atom2.getText().length() == 0) {
-				dLine = new DrawableLine(
-										name.getText(),
-										line.x1,
-										line.y1,
-										line.x2,
-										line.y2,
-										lt);
-			} else {
-				dLine = new DrawableLine(
-										name.getText(),
-										line.x1,
-										line.y1,
-										line.x2,
-										line.y2,
-										lt,
-										atom1.getText(),
-										atom2.getText());
-			}
-			lineList.addItem(dLine);
+		if (roi == null || !roi.isLine()){
+			JOptionPane.showMessageDialog(this, "To add a line you need to use the imagej line selection tool to select a line.");
+		}else{
+			Line line = (Line)roi;
+			lineList.addItem(new DrawableLine("Default Bondlength",
+																				line.x1, line.y1,
+																				line.x2, line.y2,
+																				lt));
 		}
 	}
 
 	private String createFileSaveDialog() {
 		JFileChooser chooser = new JFileChooser();
-		int returnVal = chooser.showSaveDialog(this);
-		if(returnVal == JFileChooser.APPROVE_OPTION) {
+		if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
 			return chooser.getSelectedFile().getPath();
-		}
 		return null;
 	}
 }
