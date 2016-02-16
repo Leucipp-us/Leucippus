@@ -5,7 +5,7 @@ import ij.process.*;
 import ij.plugin.frame.*;
 
 import plugGUI.*;
-import plugComm.Communicator;
+import plugComm.Comm2;
 import plugIO.AnnotationWriter;
 import plugIO.AnnotationReader;
 
@@ -50,12 +50,12 @@ public class Leucippus_ extends PlugInFrame {
 	private DrawableList pointsetList;
 	private JTabbedPane tabPane;
 	private DrawableHandler drawHandler;
-	private Communicator comm;
 	private MenuBar menuBar;
 	private boolean showDetectionHelpers;
 	private boolean showbondlengthmessage;
 	private boolean showPointsMessage;
 	private LatticeInfoPane latticeInfoPane;
+	private Comm2 comm;
 
 	public Leucippus_() {
 		super("Leucippus");
@@ -84,29 +84,6 @@ public class Leucippus_ extends PlugInFrame {
 		setLayout(new GridBagLayout());
 
 		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 0.5;
-
-		JButton removeItemButton = new JButton("Remove Item");
-		c.gridx = 0;
-		c.gridy = 3;
-		add(removeItemButton, c);
-
-
-		removeItemButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        	if (tabPane.getSelectedIndex()==0)
-        		return;
-
-        	JScrollPane scrollPane = (JScrollPane)tabPane.getSelectedComponent();
-        	JViewport viewport = scrollPane.getViewport();
-        	DrawableList tempList = (DrawableList) viewport.getView();
-        	int row = tempList.getSelectedRow();
-        	if (row != -1) {
-        		tempList.removeItem(row);
-        	}
-        }
-    });
 
     Menu t;
     Menu tt;
@@ -209,12 +186,12 @@ public class Leucippus_ extends PlugInFrame {
 										  pointList,
 										  lineList,
 										  pointsetList);
-		comm = new Communicator(drawHandler);
-		latticeInfoPane = new LatticeInfoPane(comm,
-							drawHandler,
-							pointList,
-							lineList,
-							pointsetList);
+		comm = Comm2.getInstance();
+		comm.setDrawHandler(drawHandler);
+		latticeInfoPane = new LatticeInfoPane(drawHandler,
+																					pointList,
+																					lineList,
+																					pointsetList);
 
 		tabPane.add("Analysis", new JScrollPane(latticeInfoPane));
 		tabPane.add("Points", new JScrollPane(pointList));
@@ -223,9 +200,32 @@ public class Leucippus_ extends PlugInFrame {
 
 
 		c.gridwidth = 2;
-		c.gridx = 0; c.gridy = 2;
+		c.gridx = 0; c.gridy = 0;
+		c.weightx = 1; c.weighty = 1;
 		c.fill = GridBagConstraints.BOTH;
 		add(tabPane,c);
+
+
+		JButton removeItemButton = new JButton("Remove Item");
+		c.weighty = 0;
+		c.gridx = 0; c.gridy = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		add(removeItemButton, c);
+
+		removeItemButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+        	if (tabPane.getSelectedIndex()==0)
+        		return;
+
+        	JScrollPane scrollPane = (JScrollPane)tabPane.getSelectedComponent();
+        	JViewport viewport = scrollPane.getViewport();
+        	DrawableList tempList = (DrawableList) viewport.getView();
+        	int row = tempList.getSelectedRow();
+        	if (row != -1) {
+        		tempList.removeItem(row);
+        	}
+        }
+    });
 	}
 
 	private void createPointDialog(PointType pt) {

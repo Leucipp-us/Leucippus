@@ -20,7 +20,7 @@ import javax.swing.event.TableModelListener;
 
 
 public class LatticeInfoPane extends JPanel implements TableModelListener{
-	private Communicator comm;
+	private Comm2 comm;
 	private DrawableList pointlist;
 	private DrawableList linelist;
 	private DrawableList pointsetlist;
@@ -38,12 +38,11 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 										2, 2, 6, 6, 6, 6);
 	}
 
-	public LatticeInfoPane(Communicator comm,
-						   DrawableHandler drawHandler,
-						   DrawableList pointlist,
-						   DrawableList linelist,
-						   DrawableList pointsetlist){
-		this.comm = comm;
+	public LatticeInfoPane(DrawableHandler drawHandler,
+											   DrawableList pointlist,
+											   DrawableList linelist,
+											   DrawableList pointsetlist){
+		this.comm = Comm2.getInstance();
 		this.pointlist = pointlist;
 		this.linelist = linelist;
 		this.pointsetlist = pointsetlist;

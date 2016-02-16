@@ -39,7 +39,6 @@ public class DrawableHandler implements TableModelListener,
 	private ArrayList<int[]> moved_selections;
 	private ArrayList<Integer> psindeces;
 	private ArrayList<Integer> indeces;
-	private ArrayList<HistogramWindow> hists;
 	private ImageProcessor imp;
 	private int roix;
 	private int roiy;
@@ -50,10 +49,9 @@ public class DrawableHandler implements TableModelListener,
 	private boolean isAfterRoiMoved = false;
 
 	public DrawableHandler(ImagePlus imp,
-						   DrawableList pList, 
-						   DrawableList lList, 
+						   DrawableList pList,
+						   DrawableList lList,
 						   DrawableList psList) {
-		hists = new ArrayList<HistogramWindow>();
 		pointList = pList;
 		lineList = lList;
 		pointsetList = psList;
@@ -78,7 +76,7 @@ public class DrawableHandler implements TableModelListener,
 	}
 
 	public void getXYSelections() {
-		ArrayList<DrawableItem> tl = pointsetList.getList();	
+		ArrayList<DrawableItem> tl = pointsetList.getList();
 		for (int j = 0; j < indeces.size(); j++) {
 			Integer i = indeces.get(j);
 			Integer p = psindeces.get(j);
@@ -116,16 +114,6 @@ public class DrawableHandler implements TableModelListener,
 		}
 	}
 
-	public void addHist(HistogramWindow hist) {
-		hists.add(hist);
-		redraw();
-	}
-
-	public void removeHist(HistogramWindow hist) {
-		hists.remove(hist);
-		redraw();
-	}
-
 	public ArrayList<int[]> getSelections(){
 		return selections;
 	}
@@ -141,7 +129,7 @@ public class DrawableHandler implements TableModelListener,
 				 	//resizing
 				 	isRoiResizing = true;
 				 	isAfterRoiMoved = false;
-				 	
+
 				} else if (roix != (int)roi.getBounds().getX() ||
 							roiy != (int)roi.getBounds().getY()) {
 					//moving
@@ -249,23 +237,6 @@ public class DrawableHandler implements TableModelListener,
 			}
 		}
 
-		for(HistogramWindow hw : hists) {
-			int[] point = hw.getPoint();
-			int colsize = hw.blocksx * hw.cellsx;
-			int rowsize = hw.blocksy * hw.cellsy;
-			if(hw.type == 0) {
-				int hcolsize = colsize/2;
-				int hrowsize = rowsize/2;
-				Roi r = new Roi(point[0] - hcolsize,
-								  point[1] - hrowsize,
-								  colsize,
-								  rowsize);
-				r.setStrokeColor(new Color(0,255,0));
-				overlay.add(r);
-			}
-		}
-
-
 		tl = pointsetList.getList();
 		if (roi != null && !isRoiResizing) {
 			for (int j = 0; j < indeces.size(); j++) {
@@ -276,13 +247,6 @@ public class DrawableHandler implements TableModelListener,
 				int[] arr = dps.getPoints().get(i);
 
 				boolean draw = true;
-				for (HistogramWindow hw : hists) {
-					if(arr == hw.getPoint()) {
-						draw = false;
-						break;
-					}
-				}
-
 				if(!draw) {
 					Roi r = new OvalRoi(arr[0]-4, arr[1]-4, 9, 9);
 					r.setFillColor(getComplement(dps.getColor()));
@@ -298,12 +262,6 @@ public class DrawableHandler implements TableModelListener,
 					int[] arr  = ps.getPoints().get(i);
 
 					boolean draw = true;
-					for (HistogramWindow hw : hists) {
-						if(arr == hw.getPoint()) {
-							draw = false;
-							break;
-						}
-					}
 
 					if (!draw) continue;
 					if(roi != null && isRoiResizing){
@@ -326,7 +284,7 @@ public class DrawableHandler implements TableModelListener,
 		}
 		if (roi != null)
 			imageP.setRoi(roi);
-		imageP.setOverlay(overlay); 
+		imageP.setOverlay(overlay);
 		imageP.repaintWindow();
 	}
 
@@ -364,10 +322,10 @@ public class DrawableHandler implements TableModelListener,
 	}
 
 	private static BufferedImage grayScale(BufferedImage bi) {
-		BufferedImage image = new BufferedImage(bi.getWidth(), bi.getHeight(),  
-	    BufferedImage.TYPE_BYTE_GRAY);  
-		Graphics g = image.getGraphics();  
-		g.drawImage(bi, 0, 0, null);  
+		BufferedImage image = new BufferedImage(bi.getWidth(), bi.getHeight(),
+	    BufferedImage.TYPE_BYTE_GRAY);
+		Graphics g = image.getGraphics();
+		g.drawImage(bi, 0, 0, null);
 		g.dispose();
 		return image;
 	}
@@ -407,7 +365,7 @@ public class DrawableHandler implements TableModelListener,
 				for (int i = 0; i < ps.getPoints().size(); i++){
 					int[] p = ps.getPoints().get(i);
 
-					if (roi.getType() == 10 && 
+					if (roi.getType() == 10 &&
 						checkInCircle((int) roi.getXBase(),
 										(int) roi.getYBase(),
 										p[0],
@@ -476,7 +434,7 @@ public class DrawableHandler implements TableModelListener,
 	}
 
 	//needed because java (java's stupid)
-	public void mouseExited(MouseEvent e) {}	
+	public void mouseExited(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseMoved(MouseEvent e) {}
 }
