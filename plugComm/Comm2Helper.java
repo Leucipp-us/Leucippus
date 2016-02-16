@@ -72,6 +72,7 @@ final class Comm2Helper {
           comm.pyProcess.getInputStream()));
       comm.outStream = new BufferedWriter(
         new OutputStreamWriter(comm.pyProcess.getOutputStream()));
+        System.out.println(comm.outStream);
     } catch (Exception e) {
       System.out.println(e.toString());
     }

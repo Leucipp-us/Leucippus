@@ -56,6 +56,7 @@ public class Leucippus_ extends PlugInFrame {
 	private boolean showPointsMessage;
 	private LatticeInfoPane latticeInfoPane;
 	private Comm2 comm;
+	private Thread commThread;
 
 	public Leucippus_() {
 		super("Leucippus");
@@ -68,6 +69,11 @@ public class Leucippus_ extends PlugInFrame {
 		this.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e) {
 				comm.exit();
+				try {
+					commThread.join();
+				} catch (Exception ev) {
+					System.out.println(ev);
+				}
 				drawHandler.exit();
 				drawHandler.showOriginalImage();
 			}
@@ -77,7 +83,8 @@ public class Leucippus_ extends PlugInFrame {
 	}
 
 	public void run(String arg) {
-		(new Thread(comm)).start();
+		commThread = new Thread(comm);
+		commThread.start();
 	}
 
 	private void setup() {

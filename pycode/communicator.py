@@ -1,4 +1,5 @@
 import cv2
+import os
 import sys
 import json
 import numpy as np
@@ -13,8 +14,9 @@ class Communicator(object):
 	def start(self):
 		while(not self.exit):
 			line = sys.stdin.readline()
-			message = json.loads(line)
-			self.routeMessage(message)
+			if len(line) != 0:
+				message = json.loads(line)
+				self.routeMessage(message)
 
 
 	def routeMessage(self, message):
@@ -74,4 +76,3 @@ class Communicator(object):
 
 		else:
 			print >> sys.stderr, message['type']
-			

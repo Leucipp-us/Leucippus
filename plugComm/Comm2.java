@@ -52,30 +52,37 @@ public class Comm2 implements Runnable {
 			outStream.flush();
 		} catch (Exception e) {
 			System.out.println(e);
+      System.out.println("In exit");
 		}
   }
 
   public void run() {
-    Comm2Helper.setupProcess(this);
-    sendImage();
+    if (pyProcess == null)
+      Comm2Helper.setupProcess(this);
+    System.out.println(outStream);
 
-    try {
-			while(!quit) {
-				String line = inStream.readLine();
+    while(!quit){
+      try{
+        String line = inStream.readLine();
 				if (line == null) continue;
 
-        JSONTokener jsonReader = new JSONTokener(line);
-				JSONObject jmessage = new JSONObject(jsonReader);
-
-				if(jmessage.get("type").equals("pointsets")){
+				JSONObject jmessage = new JSONObject(new JSONTokener(line));
+        if(jmessage.get("type").equals("exit")) break;
+				if(jmessage.get("type").equals("pointsets"))
 					Comm2Helper.parsePointSets(drawHandler, jmessage);
-				}
-			}
-			System.out.println("exiting");
-			inStream.close();
-			outStream.close();
+
+      }catch(Exception e){
+        System.out.println(e);
+        System.out.println("In run");
+      }
+    }
+
+    try {
+      quit = false; pyProcess = null;
+      inStream.close(); inStream = null;
+      outStream.close(); outStream = null;
 		} catch(Exception e) {
-			System.out.println(e);
+      System.out.println(e);
 		}
   }
 
@@ -96,6 +103,7 @@ public class Comm2 implements Runnable {
     JSONObject message = Comm2Helper.prepPointsMessage
       (image, points, lines, sigma, blocksize);
     try {
+      System.out.println(outStream);
       outStream.write(message.toString() + "\n");
       outStream.flush();
     } catch (Exception e) {
