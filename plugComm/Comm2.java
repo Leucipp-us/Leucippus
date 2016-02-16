@@ -59,7 +59,6 @@ public class Comm2 implements Runnable {
   public void run() {
     if (pyProcess == null)
       Comm2Helper.setupProcess(this);
-    System.out.println(outStream);
 
     while(!quit){
       try{
@@ -97,13 +96,28 @@ public class Comm2 implements Runnable {
 
   public void calculatePoints(BufferedImage image,
 								DrawableList points,
-								DrawableList lines,
+								DrawableLine lines,
 								double sigma,
 								double blocksize) {
     JSONObject message = Comm2Helper.prepPointsMessage
       (image, points, lines, sigma, blocksize);
     try {
-      System.out.println(outStream);
+      outStream.write(message.toString() + "\n");
+      outStream.flush();
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+  }
+
+  public void constrainPoints(BufferedImage image,
+								DrawableList points,
+								DrawableLine line,
+                DrawablePointSet pointset,
+								double sigma,
+								double blocksize) {
+    JSONObject message = Comm2Helper.prepPointSetMessage
+      (image, points, line, pointset, sigma, blocksize);
+    try{
       outStream.write(message.toString() + "\n");
       outStream.flush();
     } catch (Exception e) {

@@ -72,7 +72,6 @@ final class Comm2Helper {
           comm.pyProcess.getInputStream()));
       comm.outStream = new BufferedWriter(
         new OutputStreamWriter(comm.pyProcess.getOutputStream()));
-        System.out.println(comm.outStream);
     } catch (Exception e) {
       System.out.println(e.toString());
     }
@@ -143,7 +142,7 @@ final class Comm2Helper {
   public static JSONObject prepPointsMessage(BufferedImage image,
                 DrawableLine line) {
     JSONObject message = new JSONObject();
-    message.put("type", "GET_DETECTIONS");
+    message.put("type", "INITIAL_POINTS");
 
     byte[] idata = ((DataBufferByte) image.getData().getDataBuffer()).getData();
 
@@ -156,7 +155,7 @@ final class Comm2Helper {
     message.put("sigma", false);
     message.put("blocksize", false);
 
-    JSONArray lns;
+    JSONArray lns = null;
     if (line != null){
       lns = new JSONArray();
       JSONObject ln = new JSONObject();
@@ -182,24 +181,67 @@ final class Comm2Helper {
 
   public static JSONObject prepPointsMessage(BufferedImage image,
                 DrawableList points,
-                DrawableList lines,
+                DrawableLine line,
                 double sigma,
                 double blocksize) {
     JSONObject message = new JSONObject();
-    message.put("type", "GET_DETECTIONS");
+    message.put("type", "INITIAL_POINTS");
 
     byte[] idata = ((DataBufferByte) image.getData().getDataBuffer()).getData();
-
     JSONObject jsonImage = new JSONObject();
     jsonImage.put("data", idata);
     jsonImage.put("height", image.getHeight());
     jsonImage.put("width", image.getWidth());
     message.put("image", jsonImage);
 
+    message.put("sigma", false);
+    message.put("blocksize", false);
+
+    JSONArray pts = null;
+    //need to handle missing/incorrect points
+    message.put("points", pts);
+
+    JSONArray lns = null;
+    if (line != null){
+      lns = new JSONArray();
+      JSONObject ln = new JSONObject();
+      ln.put("type", line.getType().toString());
+      ln.put("atom1", line.getAtom1());
+      ln.put("atom2", line.getAtom2());
+
+      double[] ll = new double[]{
+        line.getStartX(),
+        line.getStartY(),
+        line.getEndX(),
+        line.getEndY()
+      };
+      ln.put("data", ll);
+
+      lns.put(ln);
+    }
+    message.put("lines", lns);
+    return message;
+  }
+
+  public static JSONObject prepPointSetMessage(BufferedImage image,
+                DrawableList points,
+                DrawableLine line,
+                DrawablePointSet pointset,
+                double sigma,
+                double blocksize) {
+    JSONObject message = new JSONObject();
+    message.put("type", "CONSTRAIN_POINTS");
+
+    byte[] idata = ((DataBufferByte) image.getData().getDataBuffer()).getData();
+    JSONObject jsonImage = new JSONObject();
+    jsonImage.put("data", idata);
+    jsonImage.put("height", image.getHeight());
+    jsonImage.put("width", image.getWidth());
+    message.put("image", jsonImage);
     message.put("sigma", sigma);
     message.put("blocksize", blocksize);
 
-    JSONArray pts;
+    JSONArray pts = null;
     if (points!=null) {
       pts = new JSONArray();
       for (DrawableItem i : points.getList()) {
@@ -210,36 +252,38 @@ final class Comm2Helper {
         pt.put("y",p.gety());
         pts.put(pt);
       }
-    } else {
-      pts = null;
     }
     message.put("points", pts);
 
-    JSONArray lns;
-    if (lines != null){
+    JSONArray lns = null;
+    if (line != null){
       lns = new JSONArray();
-      for (DrawableItem i : lines.getList()) {
-        DrawableLine l = (DrawableLine) i;
-        JSONObject ln = new JSONObject();
+      JSONObject ln = new JSONObject();
+      ln.put("type", line.getType().toString());
+      ln.put("atom1", line.getAtom1());
+      ln.put("atom2", line.getAtom2());
+      ln.put("data", new double[]{
+        line.getStartX(),
+        line.getStartY(),
+        line.getEndX(),
+        line.getEndY()
+      });
 
-        ln.put("type", l.getType().toString());
-        ln.put("atom1", l.getAtom1());
-        ln.put("atom2", l.getAtom2());
-
-        double[] ll = new double[]{
-          l.getStartX(),
-          l.getStartY(),
-          l.getEndX(),
-          l.getEndY()
-        };
-        ln.put("data", ll);
-
-        lns.put(ln);
-      }
-    } else {
-      lns = null;
+      lns.put(ln);
     }
     message.put("lines", lns);
+
+    JSONArray ptset = null;
+    if (pointset != null){
+      ptset = new JSONArray();
+      for(int[] arr : ((DrawablePointSet)pointset).getPoints()){
+        JSONArray t = new JSONArray();
+        t.put(arr[0]);
+        t.put(arr[1]);
+        ptset.put(t);
+      }
+    }
+    message.put("pointset", ptset);
     return message;
   }
 }

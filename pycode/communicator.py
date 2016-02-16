@@ -28,18 +28,7 @@ class Communicator(object):
 			print '{"type":"exit"}\n'
 			sys.stdout.flush()
 
-		elif message['type'] == 'GET_DETECTIONS':
-			if 'lines' in message and message['lines']:
-				for line in message['lines']:
-					if line['type'] == 'BONDLENGTH':
-						t = line['data']
-						p1 = np.array((t[0],t[1]))
-						p2 = np.array((t[2],t[3]))
-						line = p2 - p1
-						bl = np.sqrt(line.dot(line))
-						self.con.setBondlength(bl)
-						break
-
+		elif message['type'] == 'INITIAL_POINTS':
 			imagedata = np.array(message['image']['data'])
 			image = imagedata.reshape((message['image']['height'],
 								message['image']['width'])).astype(np.uint8)
@@ -50,29 +39,26 @@ class Communicator(object):
 			print json.dumps(retset)
 			sys.stdout.flush()
 
-		elif message['type'] == 'GET_HISTOGRAM':
-			point = np.array(message['point']['data'])
+		elif message['type'] == 'CONSTRAIN_POINTS':
 			imagedata = np.array(message['image']['data'])
 			image = imagedata.reshape((message['image']['height'],
 								message['image']['width'])).astype(np.uint8)
 
-			retset = self.con.getHistogram(image, point)
+			if 'lines' in message and message['lines']:
+				for line in message['lines']:
+					if line['type'] == 'BONDLENGTH':
+						t = line['data']
+						p1 = np.array((t[0],t[1]))
+						p2 = np.array((t[2],t[3]))
+						line = p2 - p1
+						bl = np.sqrt(line.dot(line))
+						self.con.setBondlength(bl)
+						break
+			retset = self.con.constrainDetections(image,
+							np.array(message['pointset']),
+							message['sigma'],
+							message['blocksize'])
 			print json.dumps(retset)
 			sys.stdout.flush()
-
-		elif message['type'] == 'IMAGE':
-			imagedata = np.array(message['image']['data'])
-			image = imagedata.reshape((message['image']['height'],
-								message['image']['width'])).astype(np.uint8)
-
-			self.con.setImage(image)
-
-		elif message['type'] == 'UPDATE_HISTOGRAM':
-			point = np.array(message['point']['data'])
-
-			retset = self.con.updateHistogram(point, message['histdata'])
-			print json.dumps(retset)
-			sys.stdout.flush()
-
 		else:
 			print >> sys.stderr, message['type']

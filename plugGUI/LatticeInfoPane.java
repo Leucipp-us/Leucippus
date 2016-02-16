@@ -144,9 +144,19 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 
 		calc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				comm.calculatePoints(
+				double sigma = Double.parseDouble(sigmafield.getText());
+				int blocksize = Integer.parseInt(kernelfield.getText());
+				if(blocksize < 3 || blocksize%2==0){
+					//We will need a popup saying the exact needed specs of the kernel
+					return; //need to output stuff
+				}
+				comm.constrainPoints(
 					drawHandler.getGrayScaleOriginal(),
-					(DrawableLine)linelist.getList().get(linelistCB.getSelectedIndex())
+					null,
+					(DrawableLine)linelist.getList().get(linelistCB.getSelectedIndex()),
+					(DrawablePointSet)pointsetlist.getList().get(pointsetCB.getSelectedIndex()),
+					sigma,
+					blocksize
 				);
 			}
 		});

@@ -26,35 +26,44 @@ class Controller(object):
 		self.bondlength = bondlength
 
 	def getDetections(self, image, sigma=False, blocksize=False):
-		pointsToSend = None
-		lpoints = []
 		self.image = image
+		segger = DerivativeSegmenter()
+		if sigma:
+			segger.sigma = sigma
+		if blocksize:
+			segger.ksize = blocksize
+		self.atomD.segmenter = segger
+		self.rawdetections = self.atomD.detect(image)
 
+		pointsToSend = {
+			'name' 	: "Initial Detections",
+			'points': self.rawdetections.tolist()
+		}
+
+		pointsets = {}
+		pointsets['type'] = 'pointsets'
+		pointsets['pointsets'] = [pointsToSend]
+		return pointsets
+
+	def constrainDetections(self, image, points, sigma=False, blocksize=False):
+		self.image = image
+		self.atomD.points = points
 
 		segger = DerivativeSegmenter()
 		if sigma:
 			segger.sigma = sigma
 		if blocksize:
 			segger.ksize = blocksize
-		self.atomD.setSegmenter(segger)
-		self.rawdetections = self.atomD.detect(image)
+		self.atomD.segImg = segger.segment(image)
 
-		refinedset = {
-			'name' 	: "Initial Detections",
-			'points': self.rawdetections.tolist()
+		pointsToSend = {
+			'name' 	: "Constrained Detections",
+			'points': spatialConstrain(self.atomD, self.bondlength).tolist()
 		}
-		pointsToSend = refinedset
-
-		if self.bondlength != None:
-			pointsToSend.update({
-				'name'  : "Constrained Detections",
-				'points': self.constrain().tolist(),
-			})
 
 		pointsets = {}
 		pointsets['type'] = 'pointsets'
 		pointsets['pointsets'] = [pointsToSend]
-
 		return pointsets
 
 	def constrain(self):
@@ -68,77 +77,3 @@ class Controller(object):
 		admap = self.adjD.findBonds(pointset)
 
 		return [v.tolist() for v in rfeatpts], [v.tolist() for v in admap]
-
-	def getHistogram(self, image, point):
-		hoiMaker = HOI.usingBlocks(3,3,3,3)
-		hois = hoiMaker.run(image, np.array([point]))
-
-		plotImages = []
-		with tempfile.NamedTemporaryFile(suffix=".png") as tmpfile:
-			for t in hois:
-				hoi = t.reshape((hoiMaker.blocksx,
-								hoiMaker.blocksy))
-				f = plt.figure()
-				f.set_frameon(False)
-
-				for i in range(0, hoi.shape[0]):
-					for k in range(0, hoi.shape[1]):
-						plt.text(k, i, 
-							str(round(hoi[i,k])),
-							bbox={
-							'facecolor':'white',
-							'edgecolor':'white',
-							'alpha':0.5
-							})
-
-				plt.axis('off')
-				plt.imshow(hoi, interpolation='none', vmin=0, vmax=255)
-				plt.savefig(tmpfile.name)
-				plotImage = cv2.imread(tmpfile.name)
-				plotImages.append(plotImage.tolist())
-
-		return {
-			'type'      : 'histogram',
-			'winid'     : 0,
-			'histogram' : hois.tolist(),
-			'histograms': plotImages
-		}
-
-	def updateHistogram(self, point, histinfo):
-		hoiMaker = HOI.usingBlocks(histinfo['bx'],
-									histinfo['by'],
-									histinfo['cx'],
-									histinfo['cy'])
-
-		hois = hoiMaker.run(self.image, np.array([point]))
-
-		plotImages = []
-		with tempfile.NamedTemporaryFile(suffix=".png") as tmpfile:
-			for t in hois:
-				hoi = t.reshape((hoiMaker.blocksx,
-								hoiMaker.blocksy))
-				f = plt.figure()
-				f.set_frameon(False)
-
-				for i in range(0, hoi.shape[0]):
-					for k in range(0, hoi.shape[1]):
-						plt.text(k, i, 
-							str(round(hoi[i,k])),
-							bbox={
-							'facecolor':'white',
-							'edgecolor':'white',
-							'alpha':0.5
-							})
-
-				plt.axis('off')
-				plt.imshow(hoi, interpolation='none', vmin=0, vmax=255)
-				plt.savefig(tmpfile.name)
-				plotImage = cv2.imread(tmpfile.name)
-				plotImages.append(plotImage.tolist())
-
-		return {
-			'type'      : 'histogram',
-			'winid'     : 0,
-			'histogram' : hois.tolist(),
-			'histograms': plotImages
-		}
