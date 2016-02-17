@@ -32,6 +32,10 @@ public class DrawableList extends JTable{
 	private DefaultTableModel tableModel;
 	private ArrayList<DrawableItem> drawables;
 
+	/**
+	 * Constructor for DrawableList.
+	 * Sets up all the listeners for the class
+	 */
 	public DrawableList() {
 		String[] colHeads = new String[]{"Draw","Color", "Name"};
 		drawables = new ArrayList<DrawableItem>();
@@ -110,17 +114,17 @@ public class DrawableList extends JTable{
 	}
 
 	private class ColorRenderer extends JLabel implements TableCellRenderer {
- 
+
 	    public ColorRenderer() {
 	    	setOpaque(true);
 	    }
-	 
+
 	    public Component getTableCellRendererComponent(
 	                            JTable table, Object value,
 	                            boolean isSelected, boolean hasFocus,
 	                            int row, int column) {
 	    	Color col = drawables.get(row).getColor();
-	    	
+
 	        setBackground(col);
 	        setToolTipText("RGB value: " + col.getRed() + ", "
                                      + col.getGreen() + ", "
@@ -137,7 +141,7 @@ public class DrawableList extends JTable{
 	    JDialog dialog;
 	    int row = 0;
 	    protected static final String EDIT = "edit";
-	 
+
 	    public ColorEditor() {
 	        //Set up the editor (from the table's point of view),
 	        //which is a button.
@@ -147,7 +151,7 @@ public class DrawableList extends JTable{
 	        button.setActionCommand(EDIT);
 	        button.addActionListener(this);
 	        button.setBorderPainted(false);
-	 
+
 	        //Set up the dialog that the button brings up.
 	        colorChooser = new JColorChooser();
 	        dialog = JColorChooser.createDialog(button,
@@ -157,7 +161,7 @@ public class DrawableList extends JTable{
 	                                        this,  //OK button handler
 	                                        null); //no CANCEL button handler
 	    }
-	 
+
 	    /**
 	     * Handles events from the editor button and from
 	     * the dialog's OK button.
@@ -169,21 +173,21 @@ public class DrawableList extends JTable{
 	            button.setBackground(currentColor);
 	            colorChooser.setColor(currentColor);
 	            dialog.setVisible(true);
-	 
+
 	            //Make the renderer reappear.
 	            fireEditingStopped();
-	 
+
 	        } else { //User pressed dialog's "OK" button.
 	            currentColor = colorChooser.getColor();
 	            drawables.get(row).setColor(currentColor);
 	        }
 	    }
-	 
+
 	    //Implement the one CellEditor method that AbstractCellEditor doesn't.
 	    public Object getCellEditorValue() {
 	        return currentColor;
 	    }
-	 
+
 	    //Implement the one method defined by TableCellEditor.
 	    public Component getTableCellEditorComponent(JTable table,
 	                                                 Object value,

@@ -30,6 +30,11 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 	private JTextField sigmafield = new JTextField("4");
 	private JTextField kernelfield = new JTextField("17");
 
+
+	/**
+	 * Default constructor
+	 * Not really used.
+	 */
 	public LatticeInfoPane(){
 		setLayout(new SpringLayout());
 		setupFirstStep();
@@ -38,6 +43,12 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 										2, 2, 6, 6, 6, 6);
 	}
 
+	/**
+	 * Constructor for LatticeInfoPane
+	 * @param pointlist			the container for the list of points
+	 * @param linelist			the container for the list of lines
+	 * @param pointsetlist	the container for the list of pointsets
+	 */
 	public LatticeInfoPane(DrawableHandler drawHandler,
 											   DrawableList pointlist,
 											   DrawableList linelist,
@@ -169,6 +180,11 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 		JLabel thirdlabel = new JLabel("");
 	}
 
+
+	/**
+	 * Resets the items within the comboboxes so they stay current.
+	 * @param e 		the event that triggered the change.
+	 */
 	public void tableChanged(TableModelEvent e) {
 		pointsetCB.removeAllItems();
 		for (DrawableItem i : pointsetlist.getList())

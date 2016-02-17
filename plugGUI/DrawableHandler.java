@@ -48,6 +48,17 @@ public class DrawableHandler implements TableModelListener,
 	private boolean isRoiResizing = false;
 	private boolean isAfterRoiMoved = false;
 
+	/**
+	 * Constructor for the DrawableHandler.
+	 * @param imp 		ImagePlus that contains the image. This will also be used
+	 *								drawing.
+	 * @param pList		DrawableList for points. This is used to monitor changes in
+	 *								the list and change accordingly.
+	 * @param lList		DrawableList for lines. This is used to monitor changes in
+	 *								the list and change accordingly.
+	 * @param psList	DrawableList for pointsets. This is used to monitor changes
+	 *								in the list and change accordingly.
+	 */
 	public DrawableHandler(ImagePlus imp,
 						   DrawableList pList,
 						   DrawableList lList,
@@ -65,17 +76,28 @@ public class DrawableHandler implements TableModelListener,
 		imp.getCanvas().addMouseMotionListener(this);
 	}
 
+
+	/**
+	 * Redraws the ROIs highlighting points, lines or pointsets on the ImagePlus
+	 * when one of the DrawableLists change.
+	 * @param e 		the event that changed the table.
+	 */
 	public void tableChanged(TableModelEvent e){
 		redraw();
 	}
 
+	/**
+	 * Tells the DrawableHandler to prepare for exit.
+	 * Removes itself as a listener from all things it's been added to.
+	 */
 	public void exit(){
 		imageP.setOverlay(null);
 		imageP.getCanvas().removeMouseListener(this);
 		imageP.getCanvas().removeMouseMotionListener(this);
 	}
 
-	public void getXYSelections() {
+
+	private void getXYSelections() {
 		ArrayList<DrawableItem> tl = pointsetList.getList();
 		for (int j = 0; j < indeces.size(); j++) {
 			Integer i = indeces.get(j);
@@ -90,6 +112,10 @@ public class DrawableHandler implements TableModelListener,
 		}
 	}
 
+	/**
+	 * Determines if there are highlighted selections
+	 * @param e			the mouse press event
+	 */
 	public void mousePressed(MouseEvent e) {
 		selections = new ArrayList<int[]>();
 		moved_selections = new ArrayList<int[]>();
@@ -114,10 +140,19 @@ public class DrawableHandler implements TableModelListener,
 		}
 	}
 
+	/**
+	 * Returns the current selections on the ImagePlus
+	 * @return 		the current set of selections as a list of 2d points.
+	 */
 	public ArrayList<int[]> getSelections(){
 		return selections;
 	}
 
+	/**
+	 * If the conditions are correct this functions moves selected points in a
+	 * pointset.
+	 * @param e			the mouse press event
+	 */
 	public void mouseDragged(MouseEvent e) {
 		Roi roi = imageP.getRoi();
 
@@ -158,6 +193,10 @@ public class DrawableHandler implements TableModelListener,
 		}
 	}
 
+	/**
+	 * Resets status after dragging points.
+	 * @param e			the mouse press event
+	 */
 	public void mouseReleased(MouseEvent e) {
 		Roi roi = imageP.getRoi();
 		if(roi != null) {
@@ -171,14 +210,14 @@ public class DrawableHandler implements TableModelListener,
 		}
 	}
 
-	public void mouseClicked(MouseEvent e) {
-		redraw();
-	}
-
 	public void addPointset(DrawablePointSet d){
 		pointsetList.addItem(d);
 	}
 
+
+	/**
+	 * Hides all rois on the ImagePlus
+	 */
 	public void hideAll(){
 		for(DrawableItem i : pointList.getList())
 			i.isDrawn(false);
@@ -206,7 +245,7 @@ public class DrawableHandler implements TableModelListener,
 		imageP.setImage(originalImage);
 	}
 
-	public void redraw() {
+	private void redraw() {
 		//important to get ROI before the imageP is set
 		Roi roi = imageP.getRoi();
 		Overlay overlay = new Overlay();
@@ -385,6 +424,10 @@ public class DrawableHandler implements TableModelListener,
 		}
 	}
 
+	/**
+	 * Merges all the selected points currently selected.
+	 * @return 				returns zero (I don't know why)
+	 */
 	public int mergeSelected() {
 		Roi roi = imageP.getRoi();
 
@@ -437,4 +480,5 @@ public class DrawableHandler implements TableModelListener,
 	public void mouseExited(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseMoved(MouseEvent e) {}
+	public void mouseClicked(MouseEvent e) {}
 }
