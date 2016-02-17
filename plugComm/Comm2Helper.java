@@ -21,6 +21,13 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 final class Comm2Helper {
+  /**
+   * Extracts a list of integer arrays from a JSONArray within a JSONObject
+   * @param   jo    The JSONObject that contains a JSONArray that is to be
+   *                that is to be converted
+   * @param   key   The key of the JSONArray
+   * @return        An ArrayList of integers that contains the extracted data.
+   */
   public static ArrayList<int[]> extractIntList(JSONObject jo, String key){
 		if(!jo.isNull(key)){
 			ArrayList<int[]> intlist = new ArrayList<int[]>();
@@ -40,6 +47,14 @@ final class Comm2Helper {
 		return null;
 	}
 
+  /**
+   * Extracts a list of points from nested JSONArrays within a JSONObject
+   * @param   jo    The JSONObject that contains a JSONArray that is to be
+   *                that is to be converted
+   * @param   key   The key of the JSONArray
+   * @return        An ArrayList of arraylists of integers that contains the
+   *                extracted data.
+   */
   public static ArrayList<ArrayList<int[]>> extractPointLists(JSONObject jo, String key){
     if(!jo.isNull(key)){
       ArrayList<ArrayList<int[]>> pointlist = new ArrayList<ArrayList<int[]>>();
@@ -62,6 +77,12 @@ final class Comm2Helper {
     return null;
   }
 
+  /**
+   * Sets up the python process that does all mathematical calulations for the
+   * program.
+   * @param comm    The existing instance of comm that will communicate with
+   *                python.
+   */
   public static void setupProcess(Comm2 comm) {
     ProcessBuilder pb = new ProcessBuilder(System.getenv("HOME")+"/.conda/envs/python2/bin/python2", "/home/david/Documents/git/ImageJPlugin/pycode");
     pb.redirectError(Redirect.INHERIT);
@@ -77,9 +98,13 @@ final class Comm2Helper {
     }
   }
 
+  /**
+   * Wraps the image in the DrawableHandler in JSON to send to the python array.
+   * @param   drawHandler   the DrawableHandler containing the image.
+   * @return                the image wraped in a JSON Object
+   */
   public static JSONObject prepImageMessage(DrawableHandler drawHandler) {
-    if(drawHandler == null)
-      return null;
+    if(drawHandler == null) return null;
 
     BufferedImage image = drawHandler.getGrayScaleOriginal();
     byte[] idata = ((DataBufferByte) image.getData().getDataBuffer()).getData();
@@ -95,6 +120,12 @@ final class Comm2Helper {
     return message;
   }
 
+  /**
+   * Parses a pointset received from the python process and adds it to the
+   * DrawableHandler.
+   * @param drawHandler   The DrawableHandler that is in charge of display
+   * @param jmessage      The message received from the python process
+   */
   public static void parsePointSets(DrawableHandler drawHandler, JSONObject jmessage) {
     String name = "";
     DrawablePointSet dps;
@@ -115,6 +146,11 @@ final class Comm2Helper {
     }
   }
 
+  /**
+   * Parses an Image stored in JSON into a BufferedImage.
+   * @param jaImg   the image stored in JSON
+   * @return        the converted BufferedImage
+   */
   public static BufferedImage parseImage(JSONArray jaImg) {
     int rows = jaImg.length();
     int cols = jaImg.getJSONArray(0).length();
@@ -139,6 +175,12 @@ final class Comm2Helper {
     return img;
   }
 
+  /**
+   * Prepares an Image and a bondlength to be sent to the python process.
+   * @param image   the image to be sent
+   * @param line    the bondlength to be sent
+   * @return        the json object containing the image and line data
+   */
   public static JSONObject prepPointsMessage(BufferedImage image,
                 DrawableLine line) {
     JSONObject message = new JSONObject();
@@ -179,6 +221,15 @@ final class Comm2Helper {
     return message;
   }
 
+  /**
+   * Prepares an image and any other associated data to be sent to the python
+   * process by wrapping it in JSON.
+   * @param image     the image to be analysed
+   * @param points    specifies any points that are either incorrect or missing
+   * @param line      the line that specifies the bondlength in the image.
+   * @param sigma     the sigma used in gaussian smoothing
+   * @param blocksize the kernel size used in gaussian smoothing
+   */
   public static JSONObject prepPointsMessage(BufferedImage image,
                 DrawableList points,
                 DrawableLine line,
@@ -223,6 +274,16 @@ final class Comm2Helper {
     return message;
   }
 
+  /**
+   * Prepares an image and any other associated data to be sent to the python
+   * process by wrapping it in JSON.
+   * @param image     the image to be analysed
+   * @param points    specifies any points that are either incorrect or missing
+   * @param line      the line that specifies the bondlength in the image.
+   * @param pointset  the pointset that is currently been analysed
+   * @param sigma     the sigma used in gaussian smoothing
+   * @param blocksize the kernel size used in gaussian smoothing
+   */
   public static JSONObject prepPointSetMessage(BufferedImage image,
                 DrawableList points,
                 DrawableLine line,

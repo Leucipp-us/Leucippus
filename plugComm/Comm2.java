@@ -29,16 +29,31 @@ public class Comm2 implements Runnable {
   protected BufferedReader inStream;
 	protected BufferedWriter outStream;
 
+
+  /**
+   * Returns the current instance of Comm2, if no instance exists one is
+   * instantiated.
+   * @return    the instance of Comm2
+   */
   public static Comm2 getInstance(){
     if (comm == null)
       comm = new Comm2();
     return comm;
   }
 
+  /**
+   * The class constructor, this constructor is private so we can use the
+   * singleton pattern with this element.
+   */
   private Comm2(){
     drawHandler = null;
   }
 
+  /**
+   * Sets the drawhandler for the instance of the communicator.
+   * The drawhandler makes it easier to update pointsets.
+   * @param drawhand  the instance of drawhandler that we'd like to use.
+   */
   public void setDrawHandler(DrawableHandler drawhand){
     drawHandler = drawhand;
   }
@@ -56,6 +71,13 @@ public class Comm2 implements Runnable {
 		}
   }
 
+  /**
+   * Runs the thread for receiving messages from the python process which it
+   * creates. Thread retreives messages and parses them into either point sets
+   * or exits the thread if an exit message is received.
+   * At the end of this function all member variables must be reset into their
+   * state they were in at instantiation.
+   */
   public void run() {
     if (pyProcess == null)
       Comm2Helper.setupProcess(this);
@@ -85,6 +107,11 @@ public class Comm2 implements Runnable {
 		}
   }
 
+
+  /**
+   * Send the image in the drawHandler to the python process
+   * This function is no longer used.
+   */
   public void sendImage(){
     try {
 			outStream.write(Comm2Helper.prepImageMessage(drawHandler).toString()+"\n");
@@ -94,13 +121,25 @@ public class Comm2 implements Runnable {
 		}
   }
 
+  /**
+   * Sends and image along with any lines associated data that can be used to
+   * help atomic detection to the python process.
+   * This version of the function isn't really used at the moment.
+   * @param image     The images that is to undergo analysis
+   * @param points    A {@link DrawableList} of points that can parsed and used
+   *                  to guide the detection process. (Can be null, Not Used)
+   * @param lines     A {@link DrawableLine} that defines the length between two
+   *                  bonds (can be null)
+   * @param sigma     The sigma that will be passed into gaussian smoothing.
+   * @param blocksize The size of the gaussian kernel
+   */
   public void calculatePoints(BufferedImage image,
 								DrawableList points,
-								DrawableLine lines,
+								DrawableLine line,
 								double sigma,
 								double blocksize) {
     JSONObject message = Comm2Helper.prepPointsMessage
-      (image, points, lines, sigma, blocksize);
+      (image, points, line, sigma, blocksize);
     try {
       outStream.write(message.toString() + "\n");
       outStream.flush();
@@ -109,6 +148,19 @@ public class Comm2 implements Runnable {
     }
   }
 
+  /**
+   * Sends data to constrains a pointset based on the bondlength and any other
+   * data that is could help guide the detection process.
+   *
+   * @param image     The images that is to undergo analysis
+   * @param points    A {@link DrawableList} of points that can parsed and used
+   *                  to guide the detection process. (Can be null, Not Used)
+   * @param lines     A {@link DrawableLine} that defines the length between two
+   *                  bonds
+   * @param pointset  The pointset that is to be contrained.
+   * @param sigma     The sigma that will be passed into gaussian smoothing.
+   * @param blocksize The size of the gaussian kernel
+   */
   public void constrainPoints(BufferedImage image,
 								DrawableList points,
 								DrawableLine line,
@@ -125,6 +177,14 @@ public class Comm2 implements Runnable {
     }
   }
 
+  /**
+   * Sends and image along with any lines associated data that can be used to
+   * help atomic detection to the python process.
+   * This version of the function isn't really used at the moment.
+   * @param image     The images that is to undergo analysis
+   * @param line     A {@link DrawableLine} that defines the length between two
+   *                  bonds
+   */
   public void calculatePoints(BufferedImage image, DrawableLine line) {
     JSONObject message = Comm2Helper.prepPointsMessage(image, line);
     try {
