@@ -42,7 +42,6 @@ import javax.swing.UIManager;
 import javax.swing.JCheckBox;
 import javax.swing.JTabbedPane;
 
-
 public class Leucippus_ extends PlugInFrame {
 	private ImagePlus imp;
 	private DrawableList pointList;
@@ -58,6 +57,11 @@ public class Leucippus_ extends PlugInFrame {
 	private Comm2 comm;
 	private Thread commThread;
 
+	/**
+	 * The class constructor.
+	 * This constructor gets the currently active image in imagej and then calls
+	 * several private functions to help set up all the GUI elements of Leucippus.
+	 */
 	public Leucippus_() {
 		super("Leucippus");
 		showbondlengthmessage = true;
@@ -82,14 +86,23 @@ public class Leucippus_ extends PlugInFrame {
 		show();
 	}
 
+	/**
+	 * Starts the communication thread that allows the java applet to communicate
+	 * with a python process.
+	 * Gets automatically started.
+	 */
 	public void run(String arg) {
 		commThread = new Thread(comm);
 		commThread.start();
 	}
 
+	/**
+	 * This function is just a private function to keep the Leucippus class
+	 * constructor clean. This function sets up the menubar and all the items
+	 * that are in the menubar. Anonymous classes are created to handle events.
+	 */
 	private void setup() {
 		setLayout(new GridBagLayout());
-
 		GridBagConstraints c = new GridBagConstraints();
 
     Menu t;
@@ -184,6 +197,11 @@ public class Leucippus_ extends PlugInFrame {
 		setupLists(c);
 	}
 
+
+	/**
+	 * This functions sets up the tabbed pane and the remove item button within
+	 * the main Leucippus window.
+	 */
 	private void setupLists(GridBagConstraints c){
 		tabPane = new JTabbedPane();
 		pointList = new DrawableList();
@@ -235,6 +253,11 @@ public class Leucippus_ extends PlugInFrame {
     });
 	}
 
+	/**
+	 * This function creates the dialog for adding a point to a set. The resulting
+	 * point is stored in either a drawable point set or as a drawable point.
+	 * @param	pt	the type of point that is to be made
+	 */
 	private void createPointDialog(PointType pt) {
 		Roi roi = imp.getRoi();
 		if (roi == null || roi.getType() != 10){
@@ -287,6 +310,12 @@ public class Leucippus_ extends PlugInFrame {
 		}
 	}
 
+	/**
+	 * This function stores a line that has been created using the imagej line
+	 * tool. This function is no longer correctly named as it does not create
+	 * a dialog.
+	 * @param	lt	the type of line that is to be stored
+	 */
 	private void createLineDialog(LineType lt) {
 		Roi roi = imp.getRoi();
 		if (roi == null || !roi.isLine()){
@@ -300,6 +329,10 @@ public class Leucippus_ extends PlugInFrame {
 		}
 	}
 
+	/**
+	 * Opens a dialog where the user is able to choose where they would like to
+	 * store a file.
+	 */
 	private String createFileSaveDialog() {
 		JFileChooser chooser = new JFileChooser();
 		if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
