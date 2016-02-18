@@ -13,8 +13,15 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 public class AnnotationReader {
-	public AnnotationReader(){}
-	public static void read(String filename, 
+
+	/**
+	 * Reads in data in an XML file and stores it in DrawableLists
+	 * @param filename		the filename of the XML file containing the stored data
+	 * @param points			a DrawableList of points for the data to be stored in
+	 * @param lines				a DrawableList of lines for the data to be stored in
+	 * @param pointsets		a DrawableList of pointsets for the data to be stored in
+	 */
+	public static void read(String filename,
 								DrawableList points,
 								DrawableList lines,
 								DrawableList pointsets) {
@@ -25,7 +32,7 @@ public class AnnotationReader {
         try {
             // use the factory to take an instance of the document builder
             DocumentBuilder db = dbf.newDocumentBuilder();
-            // parse using the builder to get the DOM mapping of the    
+            // parse using the builder to get the DOM mapping of the
             // XML file
             dom = db.parse(filename);
             Element doc = dom.getDocumentElement();
@@ -256,5 +263,5 @@ public class AnnotationReader {
 			}
     	}
     	return new Color(r,g,b);
-    } 
+    }
 }

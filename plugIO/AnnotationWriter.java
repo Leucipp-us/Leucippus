@@ -13,10 +13,16 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 public class AnnotationWriter {
-	public AnnotationWriter(){
 
-	}
-	public static void write(String filename, 
+	/**
+	 * Writes the data in the DrawableLists to XML for storage so that we may
+	 * later use them.
+	 * @param filename 			The filename of the XML to be written
+	 * @param points				The drawable list containing the points
+	 * @param lines					The drawable list containing the lines
+	 * @param pointsets			The drawable list containing the pointsets
+	 */
+	public static void write(String filename,
 								DrawableList points,
 								DrawableList lines,
 								DrawableList pointsets) {
@@ -36,7 +42,7 @@ public class AnnotationWriter {
 
 	        // create data elements and place them under root
 	        e = dom.createElement("lines");
-	        
+
 	        for(DrawableItem i : lines.getList()) {
 	        	DrawableLine l = (DrawableLine)i;
 	        	e.appendChild(writeLine(dom, l));
@@ -67,7 +73,7 @@ public class AnnotationWriter {
 	            tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
 	            // send DOM to file
-	            tr.transform(new DOMSource(dom), 
+	            tr.transform(new DOMSource(dom),
 	                                 new StreamResult(new FileOutputStream(filename)));
 
 	        } catch (TransformerException te) {
@@ -166,7 +172,7 @@ public class AnnotationWriter {
 			tt = dom.createElement("y");
 			tt.appendChild(dom.createTextNode(""+pt[1]));
 			t.appendChild(tt);
-			
+
 			e.appendChild(t);
 		}
 		root.appendChild(e);
