@@ -10,4 +10,5 @@ run:
 	imagej ~/Documents/git/thesis-notebooks/images/graphene1.png
 
 clean:
-	rm -f *.class */*.class
+	find . -type f -name '*.class' -delete
+	find . -type f -name '*.pyc' -delete

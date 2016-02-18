@@ -1,3 +1,5 @@
+#This python files starts the python process that is used to do all
+#computer vision computations
 from communicator import Communicator
 
 def main():

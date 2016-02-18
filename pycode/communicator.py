@@ -6,12 +6,18 @@ import numpy as np
 from controller import Controller
 
 class Communicator(object):
+	""" Communicator class
+	Designed to send and receive data from the Leucippus ImageJ plugin
+	"""
 	def __init__(self):
 		self.con = Controller()
 		self.exit = False
 		return
 
 	def start(self):
+		""" Start function
+			Reads lines sent from the ImageJ Plugin
+		"""
 		while(not self.exit):
 			line = sys.stdin.readline()
 			if len(line) != 0:
@@ -20,9 +26,14 @@ class Communicator(object):
 
 
 	def routeMessage(self, message):
+		""" This function converts the json message sent from the ImageJ Plugin
+			and converts it to the proper type and calls the appropriate
+			function. It then sends the results back to the ImageJ Plugin.
+		"""
 		if not 'type' in message:
 			print >> sys.stderr, "Invalid message"
 			return
+
 		elif message['type'] == 'EXIT':
 			self.exit = True
 			print '{"type":"exit"}\n'

@@ -7,6 +7,12 @@ import copy
 import sys
 
 class DerivativeSegmenter(object):
+    """ This class contains the segmentation method used in our atomic detection
+        algorithm.
+        The DerivativeSegmenter segments images based on their second derivate
+        in many directions and combines the results from each direction to get
+        the final segmentation image.
+    """
     def __init__(self):
         self.sigma = 0
         self.ksize = 17

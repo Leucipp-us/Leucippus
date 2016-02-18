@@ -4,12 +4,13 @@ import tempfile
 import numpy as np
 import matplotlib.pyplot as plt
 from TEMAnalysis.AtomDetector import AtomDetector, DerivativeSegmenter
-from TEMAnalysis.AtomicProfiling import AtomProfiler
-from TEMAnalysis.AdjacencyDetector import AdjacencyDetector
 from TEMAnalysis.Constrainers import spatialConstrain, contourMaximaConstrain
-from TEMAnalysis.HOI import HOI
 
 class Controller(object):
+	""" This class contains and calls most of the image processing functions
+		needed to analyse TEM images. At the end of the image processing
+		functions the results are put into a dictionary and then returned.
+	"""
 	def __init__(self):
 		self.image = None
 		self.rawdetections = None

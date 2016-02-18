@@ -4,16 +4,21 @@ import numpy as np
 from scipy.spatial import ConvexHull
 from scipy.spatial.distance import cdist
 
+
+""" This python script contains many functions used to constrain the set of
+    points found using the Atom Detector class.
+"""
+
 def detect_local_maxima(arr):
+    """ Takes an array and detects the troughs using the local maximum filter.
+        Returns a boolean mask of the troughs (i.e. 1 when
+        the pixel's value is the ne            print pointsToAdd
+        print pointsToAdd.shapeighborhood maximum, 0 otherwise)
+        http://stackoverflow.com/questions/3684484/peak-detection-in-a-2d-array/3689710#3689710
+    """
     from scipy.ndimage.filters import maximum_filter
     from scipy.ndimage.morphology import generate_binary_structure, binary_erosion
-    # http://stackoverflow.com/questions/3684484/peak-detection-in-a-2d-array/3689710#3689710
-    """
-    Takes an array and detects the troughs using the local maximum filter.
-    Returns a boolean mask of the troughs (i.e. 1 when
-    the pixel's value is the ne            print pointsToAdd
-        print pointsToAdd.shapeighborhood maximum, 0 otherwise)
-    """
+    
     def clusterMaxima(maxima, imageshape,):
         pts = []
         contours, _ = cv2.findContours(maxima.astype(np.uint8),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
@@ -39,90 +44,101 @@ def maximaFilter(pointset, maxima):
     localMaxViolators = np.where(distMat[i1,i2] > 5)
     return localMaxViolators[0]
 
+def contourMaximaConstrain(image, points, contours):
+	maxima = detect_local_maxima(image)
+	return contourFilter(image, points, contours, maxima)
+
 def contourFilter(image, pointset, contours, maxima):
-        seg = DerivativeSegmenter()
+    """ This function filters contours found in the segmentation image based on
+        how many maxima are found within the image.
+        This method is no longer used as it was found to be unreliable.
+    """
+    seg = DerivativeSegmenter()
+    maximaViolators = maximaFilter(pointset, maxima)
 
-        maximaViolators = maximaFilter(pointset, maxima)
+    pointsToAdd = []
+    pointsToRemove = np.zeros(len(maximaViolators), dtype=np.bool)
+    rPConts = contours[maximaViolators]
 
-        pointsToAdd = []
-        pointsToRemove = np.zeros(len(maximaViolators), dtype=np.bool)
-        rPConts = contours[maximaViolators]
+    def contourContains(contour, points):
+        count = 0
+        for p in points:
+            if cv2.pointPolygonTest(contour,(int(p[0]),int(p[1])),False) > -1:
+                count+=1
+        return count
 
-        def contourContains(contour, points):
-            count = 0
-            for p in points:
-                if cv2.pointPolygonTest(contour,(int(p[0]),int(p[1])),False) > -1:
-                    count+=1
-            return count
+    if len(rPConts) == 0:
+        return pointset
 
-        if len(rPConts) == 0:
-            return pointset
+    for i in range(0,len(rPConts)):
+        maximaInContour = contourContains(rPConts[i],maxima)
 
-        for i in range(0,len(rPConts)):
-            maximaInContour = contourContains(rPConts[i],maxima)
+        if maximaInContour > 1:
+            center = np.round(np.mean(rPConts[i],axis=0)[0]).astype(int)
+            blocksize = (2*10)#2 angstroms times ratio
 
-            if maximaInContour > 1:
-                center = np.round(np.mean(rPConts[i],axis=0)[0]).astype(int)
-                blocksize = (2*10)#2 angstroms times ratio
+            a0min = center[0] - blocksize/2
+            a0max = center[0] + blocksize/2
+            a1min = center[1] - blocksize/2
+            a1max = center[1] + blocksize/2
 
-                a0min = center[0] - blocksize/2
-                a0max = center[0] + blocksize/2
-                a1min = center[1] - blocksize/2
-                a1max = center[1] + blocksize/2
+            roiImg = image[a1min:a1max, a0min:a0max]
+            offset = np.array([[a0min,a1min]])
 
-                roiImg = image[a1min:a1max, a0min:a0max]
-                offset = np.array([[a0min,a1min]])
+            bias = 0
+            while True:
+                bias-=1
+                img = seg.segment(roiImg, bias=bias)
+                contours, _ = cv2.findContours(img.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
 
-                bias = 0
-                while True:
-                    bias-=1
-                    img = seg.segment(roiImg, bias=bias)
-                    contours, _ = cv2.findContours(img.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
+                count = 0; solution = True
+                for contour in contours:
+                    r =  cv2.boundingRect(contour)
+                    if r[2] == 1 or r[3] == 1:
+                        continue
 
-                    count = 0; solution = True
+                    count += 1
+                    maximaInContours = contourContains(contour+offset,maxima)
+                    if maximaInContours != 1:
+                        solution = False
+                        break
+
+                if count == 0:
+                    break
+
+                if solution:
+                    pointsToRemove[i] = True
                     for contour in contours:
                         r =  cv2.boundingRect(contour)
                         if r[2] == 1 or r[3] == 1:
                             continue
+                        pointsToAdd.append(np.round(np.average(contour,axis=0) + offset))
+                    break
 
-                        count += 1
-                        maximaInContours = contourContains(contour+offset,maxima)
-                        if maximaInContours != 1:
-                            solution = False
-                            break
+    rmS = np.zeros(len(pointset), dtype=np.bool)
+    rmS[maximaViolators[pointsToRemove]] = True
+    filteredPointset = pointset[~rmS]
 
-                    if count == 0:
-                        break
-
-                    if solution:
-                        pointsToRemove[i] = True
-                        for contour in contours:
-                            r =  cv2.boundingRect(contour)
-                            if r[2] == 1 or r[3] == 1:
-                                continue
-                            pointsToAdd.append(np.round(np.average(contour,axis=0) + offset))
-                        break
-
-        rmS = np.zeros(len(pointset), dtype=np.bool)
-        rmS[maximaViolators[pointsToRemove]] = True
-        filteredPointset = pointset[~rmS]
-
-        if len(pointsToAdd) > 0:
-            pointsToAdd = np.squeeze(pointsToAdd)
+    if len(pointsToAdd) > 0:
+        pointsToAdd = np.squeeze(pointsToAdd)
 
 
-            if len(pointsToAdd.shape)  == 1:
-                pointsToAdd = np.array([pointsToAdd])
+        if len(pointsToAdd.shape)  == 1:
+            pointsToAdd = np.array([pointsToAdd])
 
-            filteredPointset = np.vstack((filteredPointset, pointsToAdd))
+        filteredPointset = np.vstack((filteredPointset, pointsToAdd))
 
-        return filteredPointset
+    return filteredPointset
 
 def spatialConstrain(atomD, bondlength):
-
     return removeSpatialOffenders(atomD, bondlength)
 
 def removeSpatialOffenders(atomD, bondlength):
+    """ Removes and sometimes merges contours found in the segmentation image
+        based on the size of the contour and the distance between them.
+        If the distance between two contours is smaller than half the length of
+        the bond then we check the sizes of the contours.
+    """
     ratio = 0.6
 
     binImg, contours, points = atomD.segImg, atomD.contours, atomD.points
@@ -173,11 +189,10 @@ def removeSpatialOffenders(atomD, bondlength):
     atomD.points, atomD.contours, atomD.segImg = grabPointsAndContours(binImg)
     return atomD.points
 
-def contourMaximaConstrain(image, points, contours):
-	maxima = detect_local_maxima(image)
-	return contourFilter(image, points, contours, maxima)
-
 def grabPointsAndContours(segImg):
+    """ Finds all contours and centers within a segmentation image that have
+        area and returns them.
+    """
     from scipy.spatial import ConvexHull
     contours, _ = cv2.findContours(segImg.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
 
