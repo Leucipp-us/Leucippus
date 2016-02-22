@@ -22,8 +22,10 @@ and using apt-get it would be:
 Once this is done all you have to do is download the github repository and then
 build and install it using:
 
-`make`
-`python2install=/path/to/python2 sh install.sh`
+```bash
+make
+python2install=/path/to/python2 sh install.sh
+```
 
 This will build the code and place the Leucippus jar and python code in the
 default imagej plugin location "~/.imagej/plugins"
