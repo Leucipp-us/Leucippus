@@ -1,8 +1,6 @@
 import sys
 import cv2
-import tempfile
 import numpy as np
-import matplotlib.pyplot as plt
 from TEMAnalysis.AtomDetector import AtomDetector, DerivativeSegmenter
 from TEMAnalysis.Constrainers import spatialConstrain, contourMaximaConstrain
 

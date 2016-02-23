@@ -84,8 +84,6 @@ final class Comm2Helper {
    *                python.
    */
   public static void setupProcess(Comm2 comm) {
-    //This code should probably be altered in such a way that it reads an
-    //environment variable and uses that to determine the correct python location
     ProcessBuilder pb = new ProcessBuilder(System.getenv("leupython"), System.getenv("HOME")+"/.imagej/plugins/Leuzippy.zip");
     pb.redirectError(Redirect.INHERIT);
     try {

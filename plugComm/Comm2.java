@@ -114,7 +114,6 @@ public class Comm2 implements Runnable {
 			outStream.write(Comm2Helper.prepImageMessage(drawHandler).toString()+"\n");
 			outStream.flush();
 		} catch (Exception e) {
-			System.out.println(e);
 		}
   }
 
