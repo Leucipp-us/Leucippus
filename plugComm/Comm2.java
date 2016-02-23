@@ -93,8 +93,6 @@ public class Comm2 implements Runnable {
 					Comm2Helper.parsePointSets(drawHandler, jmessage);
 
       }catch(Exception e){
-        System.out.println(e);
-        System.out.println("In run");
       }
     }
 
@@ -103,7 +101,6 @@ public class Comm2 implements Runnable {
       inStream.close(); inStream = null;
       outStream.close(); outStream = null;
 		} catch(Exception e) {
-      System.out.println(e);
 		}
   }
 
