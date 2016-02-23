@@ -1,9 +1,8 @@
-from AtomDetector import DerivativeSegmenter
 import cv2
 import numpy as np
 from scipy.spatial import ConvexHull
 from scipy.spatial.distance import cdist
-
+from AtomDetector import DerivativeSegmenter
 
 """ This python script contains many functions used to constrain the set of
     points found using the Atom Detector class.
@@ -18,7 +17,7 @@ def detect_local_maxima(arr):
     """
     from scipy.ndimage.filters import maximum_filter
     from scipy.ndimage.morphology import generate_binary_structure, binary_erosion
-    
+
     def clusterMaxima(maxima, imageshape,):
         pts = []
         contours, _ = cv2.findContours(maxima.astype(np.uint8),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)

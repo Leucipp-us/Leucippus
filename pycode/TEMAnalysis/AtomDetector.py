@@ -1,10 +1,5 @@
-import numpy as np
-import numpy.linalg as la
 import cv2
-import matplotlib.pyplot as mpl
-import math
-import copy
-import sys
+import numpy as np
 
 class DerivativeSegmenter(object):
     """ This class contains the segmentation method used in our atomic detection
