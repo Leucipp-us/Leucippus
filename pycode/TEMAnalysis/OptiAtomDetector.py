@@ -56,6 +56,11 @@ class DerivativeSegmenter(object):
         return c.astype(np.uint8)
 
 class OptiAtomDetector(object):
+    """
+    This version of the code includes all steps of the atom detection process
+    including the portions where incorrect detections are removed and splitting
+    detections that have been accidentally merged.
+    """
     def __init__(self):
         self.segger = DerivativeSegmenter()
         self.errfunc = getBondlengthError
@@ -238,4 +243,4 @@ class OptiAtomDetector(object):
 
         cc, co = self.getPoints(nBin)
         self.points, self.contours, self.segImg = cc, co, nBin
-        return cc, co, nBin      
+        return cc, co, nBin
