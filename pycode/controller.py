@@ -44,6 +44,18 @@ class Controller(object):
 		pointsets['pointsets'] = [pointsToSend]
 		return pointsets
 
+	def getDetectionsAutomatically(self, image):
+		from TEMAnalysis.OptiAtomDetector import OptiAtomDetector
+		self.image = image
+		ad = OptiAtomDetector()
+		return {
+			'type' 		: "pointsets",
+			'pointsets'	: [{
+				'name'	: "Automatic Initial Detections",
+				'points': ad.detect(image).tolist()
+			}]
+		}
+
 	def constrainDetections(self, image, points, sigma=False, blocksize=False):
 		self.image = image
 		self.atomD.points = points

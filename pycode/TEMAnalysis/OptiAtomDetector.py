@@ -3,6 +3,11 @@ import numpy as np
 from multiprocessing import Pool
 
 def getBondlengthError(contours):
+    """
+    Calculates the root mean squared of the length of the 'bonds' between
+    contours and the average length of the 'bonds'. This value is used as the
+    error.
+    """
     from scipy.spatial.distance import cdist
     bl = []
     moments = [cv2.moments(c) for c in contours]
@@ -19,11 +24,12 @@ def getBondlengthError(contours):
     return np.linalg.norm(bl - bl.mean()) / np.sqrt(len(bl))
 
 def getError(argtup):
-    image, sigma, ksize, morphsize = argtup
+    """
+    Sets the parameters within the segmenter and then calculates contours to
+    pass to the function that will calculate the actual error.
+    """
+    image, dv.sigma, dv.ksize, dv.msize = argtup
     dv = DerivativeSegmenter()
-    dv.ksize = ksize
-    dv.sigma = sigma
-    dv.msize = morphsize
     binImg = dv.segment(image)
     contours, _ = cv2.findContours(binImg.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
     if len(contours) is 0 or len(contours) is 1: return np.inf
@@ -31,6 +37,13 @@ def getError(argtup):
     return ble if ble > 0 else np.inf
 
 class DerivativeSegmenter(object):
+    """
+    This version of the DerivativeSegmenter allows for all possible parameters
+    to be set using class variables. Theses parameters include the standard
+    deviation and kernel size of gaussian kernel for smoothing and the size of
+    the morphological operator used for removing bits of noise in the
+    segmentation image.
+    """
     def __init__(self):
         self.sigma = 0
         self.ksize = 17

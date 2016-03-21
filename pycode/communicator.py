@@ -39,6 +39,13 @@ class Communicator(object):
 			print '{"type":"exit"}\n'
 			sys.stdout.flush()
 
+		elif message['type'] == 'AUTO_POINTS':
+			imagedata = np.array(message['image']['data'])
+			image = imagedata.reshape((message['image']['height'],
+								message['image']['width'])).astype(np.uint8)
+			print self.con.getDetectionsAutomatically(image)
+			sys.stdout.flush()
+
 		elif message['type'] == 'INITIAL_POINTS':
 			imagedata = np.array(message['image']['data'])
 			image = imagedata.reshape((message['image']['height'],
