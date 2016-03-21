@@ -121,6 +121,28 @@ final class Comm2Helper {
   }
 
   /**
+   * Wraps the image in the DrawableHandler in JSON to send to the python process for use in the automated calculations.
+   * @param   drawHandler   the DrawableHandler containing the image.
+   * @return                the image wraped in a JSON Object
+   */
+  public static JSONObject prepImageMessage(DrawableHandler drawHandler) {
+    if(drawHandler == null) return null;
+
+    BufferedImage image = drawHandler.getGrayScaleOriginal();
+    byte[] idata = ((DataBufferByte) image.getData().getDataBuffer()).getData();
+
+    JSONObject message = new JSONObject();
+    message.put("type", "AUTO_POINTS");
+
+    JSONObject jsonImage = new JSONObject();
+    jsonImage.put("data", idata);
+    jsonImage.put("height", image.getHeight());
+    jsonImage.put("width", image.getWidth());
+    message.put("image", jsonImage);
+    return message;
+  }
+
+  /**
    * Parses a pointset received from the python process and adds it to the
    * DrawableHandler.
    * @param drawHandler   The DrawableHandler that is in charge of display
