@@ -117,8 +117,16 @@ public class Comm2 implements Runnable {
 		}
   }
 
+  public void automatedPointCalculation(BufferedImage image){
+    try {
+			outStream.write(Comm2Helper.prepAutoMessage(drawHandler).toString()+"\n");
+			outStream.flush();
+		} catch (Exception e) {
+		}
+  }
+
   /**
-   * Sends and image along with any lines associated data that can be used to
+   * Sends an image along with any line associated data that can be used to
    * help atomic detection to the python process.
    * This version of the function isn't really used at the moment.
    * @param image     The images that is to undergo analysis

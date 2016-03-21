@@ -125,7 +125,7 @@ final class Comm2Helper {
    * @param   drawHandler   the DrawableHandler containing the image.
    * @return                the image wraped in a JSON Object
    */
-  public static JSONObject prepImageMessage(DrawableHandler drawHandler) {
+  public static JSONObject prepAutoMessage(DrawableHandler drawHandler) {
     if(drawHandler == null) return null;
 
     BufferedImage image = drawHandler.getGrayScaleOriginal();
