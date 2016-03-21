@@ -71,7 +71,7 @@ class OptiAtomDetector(object):
         self.getPoints(self.segImg)
         self.removeSpatially()
         self.fixMergedDetections(self.contours, self.segImg)
-        return self.points, self.contours
+        return self.points
 
     def getPoints(self, binImg):
         contours, _ = cv2.findContours(binImg.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
@@ -85,7 +85,7 @@ class OptiAtomDetector(object):
 
         self.points = np.array(centers)
         self.contours = np.array(conts)
-        return self.points
+        return self.points, self.contours
 
     def getOptimalParams(self, image):
 
