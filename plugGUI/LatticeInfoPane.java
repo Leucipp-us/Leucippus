@@ -3,6 +3,7 @@ package plugGUI;
 import plugComm.*;
 import plugGUI.*;
 import layout.SpringUtilities;
+import java.awt.FlowLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemListener;
@@ -77,42 +78,20 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 	private void setupAutomatic() {
 		JLabel autolabel = new JLabel("Automatic Detection");
 		JPanel autopane = new JPanel();
-		autopane.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0;
+		autopane.setLayout(new SpringLayout());
 
-		c.gridx = 0; c.gridy = 0;
-		autopane.add(new JLabel("Learn Parameters for Detection Automatically"), c);
+		autopane.add(new JLabel("Learn Parameters for Detection Automatically"));
 
-		c.gridx = 1; c.gridy = 0;
-		autopane.add(autoCheckBox, c);
-		autoCheckBox.addItemListener(new ItemListener() {
-	    public void itemStateChanged(ItemEvent e) {
-        if(e.getStateChange() == ItemEvent.SELECTED) {//checkbox has been selected
-          sigmafield.setEnabled(false);
-					kernelfield.setEnabled(false);
-					pointsetCB.setEnabled(false);
-					linelistCB.setEnabled(false);
-        } else {//checkbox has been deselected
-					sigmafield.setEnabled(true);
-					kernelfield.setEnabled(true);
-					pointsetCB.setEnabled(true);
-					linelistCB.setEnabled(true);
-        };
-	    }
-	});
-
-
-		c.gridwidth = 2;
-		c.gridx = 0; c.gridy = 1;
 		JButton autoDetectButton = new JButton("Automatic Detection");
-		autopane.add(autoDetectButton, c);
+		autopane.add(autoDetectButton);
 		autoDetectButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				comm.automatedPointCalculation(drawHandler.getGrayScaleOriginal());
 			}
 		});
+
+		SpringUtilities.makeCompactGrid(autopane,
+										1, 2, 6, 6, 6, 6);
 
 		add(autolabel);
 		add(autopane);
