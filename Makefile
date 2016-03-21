@@ -5,7 +5,7 @@ CLASSPATH = ".:ij.jar"
 
 all: leucippus Leuzippy.zip Leucippus_.jar
 
-Leuzippy.zip:
+Leuzippy.zip: $(shell find -name "*.py" -type f)
 	cd pycode; find . -name "*.py" -print | zip ../Leuzippy -@
 
 Leucippus_.jar: leucippus

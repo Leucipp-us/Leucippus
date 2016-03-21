@@ -28,8 +28,8 @@ def getError(argtup):
     Sets the parameters within the segmenter and then calculates contours to
     pass to the function that will calculate the actual error.
     """
-    image, dv.sigma, dv.ksize, dv.msize = argtup
     dv = DerivativeSegmenter()
+    image, dv.sigma, dv.ksize, dv.msize = argtup
     binImg = dv.segment(image)
     contours, _ = cv2.findContours(binImg.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
     if len(contours) is 0 or len(contours) is 1: return np.inf

@@ -108,6 +108,11 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 		c.gridx = 0; c.gridy = 1;
 		JButton autoDetectButton = new JButton("Automatic Detection");
 		autopane.add(autoDetectButton, c);
+		autoDetectButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				comm.automatedPointCalculation(drawHandler.getGrayScaleOriginal());
+			}
+		});
 
 		add(autolabel);
 		add(autopane);
