@@ -46,13 +46,25 @@ class Controller(object):
 
 	def getDetectionsAutomatically(self, image):
 		from TEMAnalysis.OptiAtomDetector import OptiAtomDetector
+		from TEMAnalysis.GraphCycleCreator import Graph
 		self.image = image
 		ad = OptiAtomDetector()
+		g = Graph()
+
+		points = ad.detect(image)
+		cycles, graph = g.findNeighbourhood(image,
+		 									points,
+											ad.segger.ksize,
+											ad.segger.sigma)
+
+
 		return {
 			'type' 		: "pointsets",
 			'pointsets'	: [{
 				'name'	: "Automatic Initial Detections",
-				'points': ad.detect(image).tolist()
+				'points': points.tolist(),
+				'graph' : graph.edges(),
+				'cycles': [cycle.tolist() for cycle in cycles]
 			}]
 		}
 
