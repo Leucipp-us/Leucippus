@@ -97,10 +97,10 @@ class Graph:
             return atoms, removeAngles(getInnerAngles(atoms, Graph))
         return stageTwoPrune(*stageOnePrune(points, getInitial(points)))
 
-    def find_cycles(self, Image, Graph, points, reorder=True):
+    def find_cycles(self, image, Graph, points, reorder=True):
         #initialize vars
         ff = np.zeros(image.shape)
-        img, G = Image.copy(), Graph.copy()
+        G =  Graph.copy()
         node2point = {tuple(points[ind]):ind for ind in G.nodes()}
 
         def inNeighborhood(x, y, points, path):

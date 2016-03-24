@@ -8,6 +8,8 @@ public class DrawablePointSet extends DrawableItem {
 	private ArrayList<ArrayList<int[]>> features;
 	private ArrayList<ArrayList<int[]>> admap;
 	private ArrayList<int[]> hois;
+	private ArrayList<int[]> cycles;
+	private ArrayList<int[]> graphedges;
 
 	public DrawablePointSet(String n, ArrayList<int[]> pts) {
 		super(n);
@@ -16,7 +18,7 @@ public class DrawablePointSet extends DrawableItem {
 	}
 
 	public DrawablePointSet(String n,
-							ArrayList<int[]> pts, 
+							ArrayList<int[]> pts,
 							ArrayList<ArrayList<int[]>> feats) {
 		super(n);
 		this.points = pts;
@@ -37,12 +39,16 @@ public class DrawablePointSet extends DrawableItem {
 							ArrayList<int[]> pts,
 							ArrayList<ArrayList<int[]>> feats,
 							ArrayList<ArrayList<int[]>> admap,
-							ArrayList<int[]> hois) {
+							ArrayList<int[]> hois,
+							ArrayList<int[]> graphedges,
+							ArrayList<int[]> cycles) {
 		super(n);
 		this.points = pts;
 		this.features = feats;
 		this.admap = admap;
 		this.hois = hois;
+		this.graphedges = graphedges;
+		this.cycles = cycles;
 	}
 
 	public ArrayList<int[]> getPoints() {

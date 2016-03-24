@@ -52,7 +52,7 @@ class Controller(object):
 		g = Graph()
 
 		points = ad.detect(image)
-		cycles, graph = g.findNeighbourhood(image,
+		graph, cycles = g.findNeighbourhood(image,
 		 									points,
 											ad.segger.ksize,
 											ad.segger.sigma)
@@ -63,8 +63,8 @@ class Controller(object):
 			'pointsets'	: [{
 				'name'	: "Automatic Initial Detections",
 				'points': points.tolist(),
-				'graph' : graph.edges(),
-				'cycles': [cycle.tolist() for cycle in cycles]
+				'graph' : [list(edge) for edge in graph.edges()],
+				'cycles': cycles.tolist()
 			}]
 		}
 
