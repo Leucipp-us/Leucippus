@@ -88,7 +88,7 @@ class OptiAtomDetector(object):
         self.segImg = self.segger.segment(image)
         self.getPoints(self.segImg)
         self.removeSpatially()
-        self.fixMergedDetections(self.contours, self.segImg)
+        # self.fixMergedDetections(self.contours, self.segImg)
         return self.points
 
     def getPoints(self, binImg):
@@ -106,19 +106,14 @@ class OptiAtomDetector(object):
         return self.points, self.contours
 
     def getOptimalParams(self, image):
-
-        def ErrorMatrix(image, sigmax=20, kmax=31, mmax=11, debug=False):
+        def ErrorMatrix(image, sigmax=10, kmax=31, mmax=11):
             mat = None
             args = [(image, sigma, ksize, msize) for sigma in range(0, sigmax) for ksize in range(5, kmax, 2) for msize in range(3, mmax, 2)]
 
-            if ~debug:
-                p = Pool(5)
-                mat = np.array([getError(arg) for arg in args]).reshape((sigmax, (kmax-5)/2, (mmax-3)/2))
-                p.close(); p.join()
-            else:
-                mat = np.array(p.map(getError, args)).reshape((sigmax, (kmax-5)/2, (mmax-3)/2))
+            p = Pool(5)
+            mat = np.array(p.map(getError, args)).reshape((sigmax, (kmax-5)/2, (mmax-3)/2))
+            p.close(); p.join()
             return mat
-
 
         errMat = ErrorMatrix(image)
         i1, i2, i3 = np.where(errMat == errMat.min())
@@ -145,7 +140,7 @@ class OptiAtomDetector(object):
         def getViolatingPairs(points):
             distMat = cdist(points, points)
             np.fill_diagonal(distMat,np.inf)
-            return np.where(distMat < bondlength * 0.50)
+            return np.where(distMat < bondlength * 0.60)
 
         ir, ic = getViolatingPairs(points)
 
@@ -176,14 +171,13 @@ class OptiAtomDetector(object):
         ir, ic = getViolatingPairs(points)
 
         for c1, c2 in zip(contours[ir], contours[ic]):
-
             M1 = cv2.moments(c1)
             M2 = cv2.moments(c2)
             sc1 = np.squeeze(c1)
             sc2 = np.squeeze(c2)
 
             cdistMat = cdist(sc1,sc2)
-            if np.min(cdistMat) < 10.0:
+            if np.min(cdistMat) < 15.0:
                 nc = np.vstack((sc1,sc2))
                 hull = ConvexHull(nc)
                 h = nc[hull.vertices]
