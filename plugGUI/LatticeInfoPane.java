@@ -92,7 +92,6 @@ public class LatticeInfoPane extends JPanel implements TableModelListener{
 
 		SpringUtilities.makeCompactGrid(autopane,
 										1, 2, 6, 6, 6, 6);
-
 		add(autolabel);
 		add(autopane);
 	}
