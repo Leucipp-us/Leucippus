@@ -319,7 +319,7 @@ public class DrawableHandler implements TableModelListener,
 					}
 
 					Roi r = new PolygonRoi(xPoints, yPoints, cycle.length, Roi.POLYGON);
-					Color c = ps.getColor();
+					Color c = DrawablePointSet.ringColor(cycle.length);
 					r.setFillColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 32));
 					overlay.add(r);
 				}

@@ -1,5 +1,6 @@
 package plugGUI;
 
+import java.awt.Color;
 import java.lang.Math;
 import java.util.ArrayList;
 
@@ -10,6 +11,24 @@ public class DrawablePointSet extends DrawableItem {
 	private ArrayList<int[]> hois;
 	private ArrayList<int[]> cycles;
 	private ArrayList<int[]> graphedges;
+
+	public static Color ringColor(int cycleLength){
+		switch(cycleLength){
+			case 3:
+				return Color.PINK;
+			case 4:
+				return Color.ORANGE;
+			case 5:
+				return Color.GREEN;
+			case 6:
+				return Color.CYAN;
+			case 7:
+				return Color.BLUE;
+			case 8:
+				return Color.MAGENTA;
+		}
+		return Color.RED;
+	}
 
 	public DrawablePointSet(String n, ArrayList<int[]> pts) {
 		super(n);
