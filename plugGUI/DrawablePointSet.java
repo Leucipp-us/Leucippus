@@ -63,6 +63,14 @@ public class DrawablePointSet extends DrawableItem {
 		return admap;
 	}
 
+	public ArrayList<int[]> getEdges(){
+		return graphedges;
+	}
+
+	public ArrayList<int[]> getCycles(){
+		return cycles;
+	}
+
 	public double distance(int[] p1, int[] p2) {
 		int dp1 = (p2[1] - p1[1])*(p2[1] - p1[1]);
 		int dp0 = (p2[0] - p1[0])*(p2[0] - p1[0]);

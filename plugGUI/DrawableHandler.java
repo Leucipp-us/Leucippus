@@ -4,6 +4,7 @@ import ij.gui.Roi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.Overlay;
+import ij.gui.PolygonRoi;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
@@ -297,6 +298,33 @@ public class DrawableHandler implements TableModelListener,
 		for (DrawableItem item : tl) {
 			DrawablePointSet ps = (DrawablePointSet) item;
 			if(ps.isDrawn()) {
+				//Draws Graph Edges
+				for(int[] edge : ps.getEdges()){
+					int[] p1 = ps.getPoints().get(edge[0]);
+					int[] p2 = ps.getPoints().get(edge[1]);
+
+					Roi r = new Line(p1[0], p1[1], p2[0], p2[1]);
+					r.setFillColor(ps.getColor());
+					overlay.add(r);
+				}
+
+				//Draws cycles
+				for(int[] cycle : ps.getCycles()){
+					int[] xPoints = new int[cycle.length];
+					int[] yPoints = new int[cycle.length];
+
+					for(int i = 0; i < cycle.length; i++){
+						xPoints[i] = ps.getPoints().get(cycle[i])[0];
+						yPoints[i] = ps.getPoints().get(cycle[i])[1];
+					}
+
+					Roi r = new PolygonRoi(xPoints, yPoints, cycle.length, Roi.POLYGON);
+					Color c = ps.getColor();
+					r.setFillColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 32));
+					overlay.add(r);
+				}
+
+				//Draws Points
 				for(int i = 0; i < ps.getPoints().size(); i++) {
 					int[] arr  = ps.getPoints().get(i);
 
