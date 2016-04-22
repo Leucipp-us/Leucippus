@@ -19,7 +19,7 @@ To build and run Leucippus you need the following software:
 - numpy
 - scipy
 - python-opencv
-- jdk (javac)
+- jdk8 (javac 1.8)
 - ij.jar (ImageJ jar file)
 
 If you are using apt-get for your package manager you can install all of these
