@@ -89,10 +89,12 @@ public class Comm2 implements Runnable {
 
 				JSONObject jmessage = new JSONObject(new JSONTokener(line));
         if(jmessage.get("type").equals("exit")) break;
-				if(jmessage.get("type").equals("pointsets"))
+				if(jmessage.get("type").equals("pointsets")){
 					Comm2Helper.parsePointSets(drawHandler, jmessage);
+        }
 
       }catch(Exception e){
+        System.out.println(e);
       }
     }
 
@@ -119,7 +121,7 @@ public class Comm2 implements Runnable {
 
   public void automatedPointCalculation(BufferedImage image){
     try {
-			outStream.write(Comm2Helper.prepAutoMessage(drawHandler).toString()+"\n");
+			outStream.write(Comm2Helper.prepAutoMessage(image).toString()+"\n");
 			outStream.flush();
 		} catch (Exception e) {
 		}

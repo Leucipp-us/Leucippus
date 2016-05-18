@@ -126,8 +126,6 @@ final class Comm2Helper {
    * @return                the image wraped in a JSON Object
    */
   public static JSONObject prepAutoMessage(BufferedImage image) {
-    if(drawHandler == null) return null;
-
     byte[] idata = ((DataBufferByte) image.getData().getDataBuffer()).getData();
 
     JSONObject message = new JSONObject();
@@ -157,11 +155,13 @@ final class Comm2Helper {
 
       if(!jo.isNull("name")) name = jo.getString("name");
       ArrayList<int[]> pointset = extractIntList(jo, "points");
+      ArrayList<int[]> graphedges = extractIntList(jo, "graph");
+      ArrayList<int[]> cycles = extractIntList(jo, "cycles");
       ArrayList<int[]> hoislist = extractIntList(jo, "hois");
       ArrayList<ArrayList<int[]>> featset = extractPointLists(jo, "features");
       ArrayList<ArrayList<int[]>> admap = extractPointLists(jo, "admap");
 
-      dps = new DrawablePointSet(name,pointset, featset, admap, hoislist);
+      dps = new DrawablePointSet(name,pointset, featset, admap, hoislist, graphedges, cycles);
       drawHandler.hideAll();
       drawHandler.addPointset(dps);
     }
