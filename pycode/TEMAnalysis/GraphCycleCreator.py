@@ -28,10 +28,10 @@ class Graph:
                     g.add_edge(i,x, weight=D[i,x])
             return g
 
-        def stageOnePrune(atoms, Graph):
+        def stageOnePrune(atoms, Graph, chargeratio=0.70):
             """Generates an image mask which specifies 'areas of charge'.
             If a line is not entirely within this areas it is removed"""
-            chargeratio=0.80 #magic number that gives us just enough room to prune most incorrect lines
+            #charge ratio is a magic number that gives us just enough room to prune most incorrect lines
             lineImg = np.zeros(image.shape, dtype=np.uint8)
             fimage = cv2.GaussianBlur(image,(ksize, ksize), sigma).astype(np.float64)
             chargeAreas = fimage > fimage.mean()*chargeratio
@@ -45,7 +45,7 @@ class Graph:
 
                 cv2.line(lineImg, p1,p2, 0)
             for n in [n for n in Graph.degree() if Graph.degree()[n] == 0]: Graph.remove_node(n)
-            return np.array([atoms[n] for n in Graph.nodes()]), Graph
+            return atoms, Graph
 
         def stageTwoPrune(atoms, Graph):
             def getAngle(v1, v2):
@@ -57,7 +57,7 @@ class Graph:
                 for node in G.nodes():
                     neighbours = G.neighbors(node)
                     if len(neighbours) == 0 or len(neighbours)== 1: continue
-                    for ind in range(len(neighbours)-1,0,-1):
+                    for ind in range(len(neighbours)-1,-1,-1):
                         index = ind - 1
                         l1 = ps[neighbours[ind]] - ps[node]
                         l2 = ps[neighbours[index]] - ps[node]
@@ -80,7 +80,7 @@ class Graph:
                     else:
                         if Graph.has_edge(*edge):
                             Graph.remove_edge(*edge)
-                        else:
+                        elif Graph.has_edge(*rdge):
                             Graph.remove_edge(*rdge)
 
                     edge = (int(angle[1]),int(angle[3]))
@@ -90,17 +90,17 @@ class Graph:
                     else:
                         if Graph.has_edge(*edge):
                             Graph.remove_edge(*edge)
-                        else:
-                            Graph.remove_edge(*edge)
+                        elif Graph.has_edge(*rdge):
+                            Graph.remove_edge(*rdge)
                 return Graph
 
             return atoms, removeAngles(getInnerAngles(atoms, Graph))
         return stageTwoPrune(*stageOnePrune(points, getInitial(points)))
 
-    def find_cycles(self, image, Graph, points, reorder=True):
+    def find_cycles(self, Image, Graph, points, reorder=True):
         #initialize vars
-        ff = np.zeros(image.shape)
-        G =  Graph.copy()
+        ff = np.zeros(Image.shape)
+        img, G = Image.copy(), Graph.copy()
         node2point = {tuple(points[ind]):ind for ind in G.nodes()}
 
         def inNeighborhood(x, y, points, path):

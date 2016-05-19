@@ -29,7 +29,9 @@ ifeq '$(py2)' ''
 	@echo ""
 else
 	install Leucippus_.jar Leuzippy.zip ~/.imagej/plugins
+ifeq '$(leupython)' ''
 	echo "export leupython=$(py2)" >> ~/.bashrc
+endif
 endif
 
 run:
