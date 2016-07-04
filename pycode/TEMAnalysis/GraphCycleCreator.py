@@ -48,51 +48,65 @@ class Graph:
             return atoms, Graph
 
         def stageTwoPrune(atoms, Graph):
-            def getAngle(v1, v2):
-                return np.arctan2(np.linalg.norm(np.cross(v1, v2)), np.dot(v1, v2))
+        def getAngle(v1, v2):
+            from numpy.linalg import norm
+            return np.arccos(np.dot(v1/norm(v1), v2/norm(v2)))
 
-            def getInnerAngles(ps, G):
-                """Returns a 2d array where the columns are [angle in rads, source edges, end edge 1, end edge 2]"""
-                al = []
-                for node in G.nodes():
-                    neighbours = G.neighbors(node)
-                    if len(neighbours) == 0 or len(neighbours)== 1: continue
-                    for ind in range(len(neighbours)-1,-1,-1):
-                        index = ind - 1
+        def getTanAngle(v1, v2):
+            ang = np.arctan2(v2[1], v2[0]) - np.arctan2(v1[1], v1[0])
+            if ang < 0:
+                return 2*np.pi + ang
+            else:
+                return ang
+
+        def getInnerAngles(ps, G):
+            """Returns a 2d array where the columns are [angle in rads, source edges, end edge 1, end edge 2]"""
+            al = []
+            for node in G.nodes():
+                neighbours = G.neighbors(node)
+                if len(neighbours) in [0,1,2]: continue
+                potang = []
+                for ind in range(len(neighbours)-1,-1,-1):
+                    for index in range(len(neighbours)-1,-1,-1):
+                        if neighbours[ind] == neighbours[index]: continue
                         l1 = ps[neighbours[ind]] - ps[node]
                         l2 = ps[neighbours[index]] - ps[node]
                         angle = getAngle(l1,l2)
-                        al.append( [angle, node, neighbours[ind], neighbours[index]])
-                return np.array(al)
+                        tangle = getTanAngle(l1,l2)
+                        potang.append([tangle, node, neighbours[ind], neighbours[index], tangle])
 
-            def removeAngles(angles):
-                mean = angles[:,0].mean()
-                std = angles[:,0].std()
+                potang = np.array(potang)
+                sn, n = [G.neighbors(node)[0]] * 2
+                while True:
+                    ind = np.where(potang[:,2] == n)[0]
+                    arg = potang[ind,4].argmin()
+                    nind = ind[arg]
+                    n = potang[nind, 3]
+                    al.append(potang[nind])
+                    if sn == n: break
+            return np.array(al)
 
-                edgeset = set()
-                for angle in angles:
-                    if mean - 3*std < angle[0] < mean + 3*std: continue
+        def removeAngles(angles):
+            mean = angles[:,0].mean()
+            std = angles[:,0].std()
 
-                    edge = (int(angle[1]),int(angle[2]))
-                    rdge = (int(angle[2]),int(angle[1]))
-                    if edge not in edgeset and rdge not in edgeset:
+            edgeset = set()
+            print np.degrees(mean), np.degrees(mean - 2*std), np.degrees(mean + 2*std)
+            for angle in angles:
+                if mean - 2*std < angle[0] < mean + 2*std: continue
+
+                def checkAndRemove(edge):
+                    if edge not in Graph.edges():
+                        return
+                    if edge not in edgeset:
                         edgeset.add(edge)
                     else:
-                        if Graph.has_edge(*edge):
-                            Graph.remove_edge(*edge)
-                        elif Graph.has_edge(*rdge):
-                            Graph.remove_edge(*rdge)
+                        Graph.remove_edge(*edge)
+                        return 1
 
-                    edge = (int(angle[1]),int(angle[3]))
-                    rdge = (int(angle[3]),int(angle[1]))
-                    if edge not in edgeset and rdge not in edgeset:
-                        edgeset.add(edge)
-                    else:
-                        if Graph.has_edge(*edge):
-                            Graph.remove_edge(*edge)
-                        elif Graph.has_edge(*rdge):
-                            Graph.remove_edge(*rdge)
-                return Graph
+                checkAndRemove((angle[1], angle[2]))
+                checkAndRemove((angle[1], angle[3]))
+            return Graph
 
             return atoms, removeAngles(getInnerAngles(atoms, Graph))
         return stageTwoPrune(*stageOnePrune(points, getInitial(points)))
