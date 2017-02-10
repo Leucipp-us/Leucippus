@@ -146,7 +146,6 @@ class OptiAtomDetector(object):
 
         ellipses = []
         for c1, c2 in zip(contours[ir], contours[ic]):
-            if ir == ic: continue
 
             M1 = cv2.moments(c1)
             M2 = cv2.moments(c2)

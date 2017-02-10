@@ -300,6 +300,9 @@ public class DrawableHandler implements TableModelListener,
 			if(ps.isDrawn()) {
 				//Draws Graph Edges
 				for(int[] edge : ps.getEdges()){
+
+					if(ps.isPointHidden(edge[0]) || ps.isPointHidden(edge[1])) continue;
+
 					int[] p1 = ps.getPoints().get(edge[0]);
 					int[] p2 = ps.getPoints().get(edge[1]);
 
@@ -313,7 +316,13 @@ public class DrawableHandler implements TableModelListener,
 					int[] xPoints = new int[cycle.length];
 					int[] yPoints = new int[cycle.length];
 
+					boolean draw = true;
 					for(int i = 0; i < cycle.length; i++){
+						if(ps.isPointHidden(cycle[i])){
+							draw=false;
+							break;
+						}
+						if (!draw) continue;
 						xPoints[i] = ps.getPoints().get(cycle[i])[0];
 						yPoints[i] = ps.getPoints().get(cycle[i])[1];
 					}
@@ -326,6 +335,7 @@ public class DrawableHandler implements TableModelListener,
 
 				//Draws Points
 				for(int i = 0; i < ps.getPoints().size(); i++) {
+					if(ps.isPointHidden(i)) continue;
 					int[] arr  = ps.getPoints().get(i);
 
 					boolean draw = true;
@@ -384,7 +394,7 @@ public class DrawableHandler implements TableModelListener,
 			null);
 
 		hsv[0] += 0.25;
-		if (hsv[0] > 1.0) hsv[0] -= 1.0;
+		if (hsv[0] > 1.0) hsv[0] -= 1.0;for_isaac
 		return Color.getHSBColor(hsv[0],hsv[1],hsv[2]);
 	}
 
@@ -452,6 +462,30 @@ public class DrawableHandler implements TableModelListener,
 		}
 	}
 
+	public int deleteSelected() {
+		Roi roi = imageP.getRoi();
+
+		int count = 0;
+		for(DrawableItem i : pointsetList.getList()){
+			if (i.isDrawn()) count++;
+			if (count == 1) break;
+		}
+
+		if (count == 0) return 1;
+
+		if(roi!=null){
+			getSelectedPoints(roi);
+			for (int j = 0; j < indeces.size(); j++) {
+				Integer i = indeces.get(j);
+				Integer p = psindeces.get(j);
+
+				((DrawablePointSet) pointsetList.getList().get(p)).remove(i);
+			}
+		}
+		redraw();
+		return 0;
+	}
+
 	/**
 	 * Merges all the selected points currently selected.
 	 * @return 				returns zero (I don't know why)
@@ -497,7 +531,6 @@ public class DrawableHandler implements TableModelListener,
 			for (int i : indeces){
 				dps.getPoints().remove(i);
 			}
-			dps.getPoints().add(np);
 		}
 		getSelectedPoints(roi);
 		redraw();

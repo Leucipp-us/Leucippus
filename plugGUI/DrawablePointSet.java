@@ -2,7 +2,9 @@ package plugGUI;
 
 import java.awt.Color;
 import java.lang.Math;
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DrawablePointSet extends DrawableItem {
 	private ArrayList<int[]> points;
@@ -11,6 +13,7 @@ public class DrawablePointSet extends DrawableItem {
 	private ArrayList<int[]> hois;
 	private ArrayList<int[]> cycles;
 	private ArrayList<int[]> graphedges;
+	private ArrayList<Boolean> drawMask;
 
 	public static Color ringColor(int cycleLength){
 		switch(cycleLength){
@@ -42,6 +45,7 @@ public class DrawablePointSet extends DrawableItem {
 		super(n);
 		this.points = pts;
 		this.features = feats;
+		setupDrawMask();
 	}
 
 	public DrawablePointSet(String n,
@@ -52,6 +56,7 @@ public class DrawablePointSet extends DrawableItem {
 		this.points = pts;
 		this.features = feats;
 		this.admap = admap;
+		setupDrawMask();
 	}
 
 	public DrawablePointSet(String n,
@@ -68,6 +73,12 @@ public class DrawablePointSet extends DrawableItem {
 		this.hois = hois;
 		this.graphedges = graphedges;
 		this.cycles = cycles;
+		setupDrawMask();
+	}
+
+	private void setupDrawMask(){
+		this.drawMask = new ArrayList<Boolean>(Arrays.asList(new Boolean[this.points.size()]));
+		Collections.fill(this.drawMask, Boolean.TRUE);
 	}
 
 	public ArrayList<int[]> getPoints() {
@@ -90,9 +101,17 @@ public class DrawablePointSet extends DrawableItem {
 		return cycles;
 	}
 
+	public boolean isPointHidden(int i){
+		return (drawMask.get(i) != Boolean.TRUE);
+	}
+
 	public double distance(int[] p1, int[] p2) {
 		int dp1 = (p2[1] - p1[1])*(p2[1] - p1[1]);
 		int dp0 = (p2[0] - p1[0])*(p2[0] - p1[0]);
 		return Math.sqrt(dp1 + dp0);
+	}
+
+	public void remove(int i){
+		drawMask.set(i , false);
 	}
 }

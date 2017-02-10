@@ -154,11 +154,19 @@ public class Leucippus_ extends PlugInFrame {
 
     t = new Menu("Edit");
     tt = new Menu("Points");
-    mi = new MenuItem("Merge Points");
+    // mi = new MenuItem("Merge Points");
+    // mi.addActionListener(new ActionListener() {
+    //     public void actionPerformed(ActionEvent e) {
+    //         drawHandler.mergeSelected();
+    //     }
+    // });
+    // tt.add(mi);
+
+		mi = new MenuItem("Delete Points");
     mi.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            drawHandler.mergeSelected();
-        }
+            drawHandler.deleteSelected();
+        } //this is a test, ignore this
     });
     tt.add(mi);
     t.add(tt);
