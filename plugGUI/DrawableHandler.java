@@ -394,7 +394,7 @@ public class DrawableHandler implements TableModelListener,
 			null);
 
 		hsv[0] += 0.25;
-		if (hsv[0] > 1.0) hsv[0] -= 1.0;for_isaac
+		if (hsv[0] > 1.0) hsv[0] -= 1.0;
 		return Color.getHSBColor(hsv[0],hsv[1],hsv[2]);
 	}
 

@@ -11,7 +11,7 @@ Leuzippy.zip: $(shell find -name "*.py" -type f)
 Leucippus_.jar: Leucippus_.class classes.list
 	jar cf Leucippus_.jar @classes.list
 
-classes.list:
+classes.list: $(shell find -name "*.class" -type f)
 	find . -name '*.class' -print > classes.list; echo "plugins.config" >> classes.list
 
 Leucippus_.class: ij.jar $(shell find -name "*.java" -type f) layout/SpringUtilities.class
@@ -23,19 +23,21 @@ layout/SpringUtilities.class:
 ij.jar:
 	wget imagej.nih.gov/ij/upgrade/ij.jar
 
-install:
+install: Leuzippy.zip Leucippus_.jar
+ifeq '$(leupython)' ''
 ifeq '$(py2)' ''
 	@echo "Please set the py2 make variable using 'make install py2=/path/to/python2' to install Leucippus"
 	@echo ""
 else
-	install Leucippus_.jar Leuzippy.zip ~/.imagej/plugins
-ifeq '$(leupython)' ''
 	echo "export leupython=$(py2)" >> ~/.bashrc
+	install Leucippus_.jar Leuzippy.zip ~/.imagej/plugins
 endif
+else
+	install Leucippus_.jar Leuzippy.zip ~/.imagej/plugins
 endif
 
-run:
-	imagej ~/Documents/git/thesis-notebooks/images/graphene1.png
+run: install
+	imagej ~/git/thesis-notebooks/images/for_isaac.png
 
 clean:
 	find . -type f -name '*.class' -delete

@@ -44,7 +44,7 @@ class Graph:
                     Graph.remove_edge(*edge)
 
                 cv2.line(lineImg, p1,p2, 0)
-            for n in [n for n in Graph.degree() if Graph.degree()[n] == 0]: Graph.remove_node(n)
+            for n in (n for n in Graph.degree() if Graph.degree()[n] == 0): Graph.remove_node(n)
             return atoms, Graph
 
         def stageTwoPrune(atoms, Graph):
@@ -72,16 +72,18 @@ class Graph:
                             l1 = ps[neighbours[ind]] - ps[node]
                             l2 = ps[neighbours[index]] - ps[node]
                             tangle = getTanAngle(l1,l2)
-                            potang.append([tangle, node, neighbours[ind], neighbours[index], tangle])
+                            potang.append([tangle, node, neighbours[ind], neighbours[index]])
 
                     potang = np.array(potang)
                     sn, n = [G.neighbors(node)[0]] * 2
-                    while True:
+                    while True: #This loop orders the angles for later
                         ind = np.where(potang[:,2] == n)[0]
-                        arg = potang[ind,4].argmin()
+                        arg = potang[ind,0].argmin()
                         nind = ind[arg]
-                        n = potang[nind, 3]
+
                         al.append(potang[nind])
+
+                        n = potang[nind, 3]
                         if sn == n: break
                 return np.array(al)
 
@@ -92,7 +94,7 @@ class Graph:
                 edgeset = set()
                 # print np.degrees(mean), np.degrees(mean - 2*std), np.degrees(mean + 2*std)
                 for angle in angles:
-                    if mean - 2*std < angle[0] < mean + 2*std: continue
+                    if mean - 1*std < angle[0] < mean + 1*std: continue
 
                     def checkAndRemove(edge):
                         if edge not in Graph.edges():
