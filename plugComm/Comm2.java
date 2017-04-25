@@ -82,8 +82,8 @@ public class Comm2 implements Runnable {
     if (pyProcess == null)
       Comm2Helper.setupProcess(this);
 
-    while(!quit){
-      try{
+    try{
+      while(!quit){
         String line = inStream.readLine();
 				if (line == null) continue;
 
@@ -92,10 +92,10 @@ public class Comm2 implements Runnable {
 				if(jmessage.get("type").equals("pointsets")){
 					Comm2Helper.parsePointSets(drawHandler, jmessage);
         }
-
-      }catch(Exception e){
-        System.out.println(e);
       }
+
+    }catch(Exception e){
+      System.out.println(e);
     }
 
     try {
@@ -103,6 +103,8 @@ public class Comm2 implements Runnable {
       inStream.close(); inStream = null;
       outStream.close(); outStream = null;
 		} catch(Exception e) {
+      System.out.println("Error Closing Streams");
+      System.out.println(e);
 		}
   }
 
@@ -116,6 +118,7 @@ public class Comm2 implements Runnable {
 			outStream.write(Comm2Helper.prepImageMessage(drawHandler).toString()+"\n");
 			outStream.flush();
 		} catch (Exception e) {
+      System.out.println("Error in sengImage() in Comm2.java");
 		}
   }
 

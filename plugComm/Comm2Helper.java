@@ -84,7 +84,7 @@ final class Comm2Helper {
    *                python.
    */
   public static void setupProcess(Comm2 comm) {
-    ProcessBuilder pb = new ProcessBuilder(System.getenv("leupython"), System.getenv("HOME")+"/.imagej/plugins/Leuzippy.zip");
+    ProcessBuilder pb = new ProcessBuilder("python2", System.getenv("HOME")+"/.imagej/plugins/Leuzippy.zip");
     pb.redirectError(Redirect.INHERIT);
     try {
       comm.pyProcess = pb.start();

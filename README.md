@@ -19,49 +19,21 @@ To build and run Leucippus you need the following software:
 - numpy
 - scipy
 - python-opencv
+- python-networkx
 - jdk8 (javac 1.8)
 - ij.jar (ImageJ jar file)
 
-If you are using apt-get for your package manager you can install all of these
+###Commands
+
+If you are using apt for your package manager you can easily install all of these
 using the command:
 
-`sudo apt-get install git make python python-numpy python-scipy python-opencv openjdk-8-jdk`
+`sudo apt install git make python python-numpy python-scipy python-opencv python-networkx openjdk-8-jdk`
 
-If you are not using apt-get you can install the corresponding repositories
-using your package manager. Note that ij.jar will be automatically downloaded
-by the makefile when you build leucippus.
+If you are not using apt or you are using a virtual environment you will need to
+find the correct packages to build the code.
 
-If you are using python3 as your version of choice then you may need to either
-use a virtual environment or download python 2 from your package manager.
-
-###Using package manager
-If you are using a package manager for python, like conda or pip, please use it
-to install numpy, scipy and opencv.
-
-Using Anaconda the command would be:
-
-`conda install numpy scipy opencv`
-
-and using apt-get it would be:
-
-`sudo apt-get install python-numpy python-scipy python-opencv`
-
-Once this is done all you have to do is download the github repository and then
-build and install it using:
-
-```bash
-make
-make install py2=/path/to/python2.7
-```
-
-This will build the code and place the Leucippus jar and python code in the
-default ImageJ plugin location "~/.ImageJ/plugins". Note that if you do not set
-the py2 variable correctly the plugin will not function properly.
-
-Before attempting to use the plugin make sure you refresh your environment
-variables using
-`source ~/.bashrc`
-or
-`. ~/.bashrc`.
-
-Now you're ready to start using the Leucippus plugin.
+In order to build and install this repository you'll need to have run imageJ atleast once.
+To build Leucippus, navigate to your repository directory and use `make`.
+This will build and package the java classes and python code into a jar and zip file
+respectively. Then just use `make install` in order to place the files within the imageJ plugin.

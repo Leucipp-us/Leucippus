@@ -24,20 +24,7 @@ ij.jar:
 	wget imagej.nih.gov/ij/upgrade/ij.jar
 
 install: Leuzippy.zip Leucippus_.jar
-ifeq '$(leupython)' ''
-ifeq '$(py2)' ''
-	@echo "Please set the py2 make variable using 'make install py2=/path/to/python2' to install Leucippus"
-	@echo ""
-else
-	echo "export leupython=$(py2)" >> ~/.bashrc
 	install Leucippus_.jar Leuzippy.zip ~/.imagej/plugins
-endif
-else
-	install Leucippus_.jar Leuzippy.zip ~/.imagej/plugins
-endif
-
-run: install
-	imagej ~/git/thesis-notebooks/images/for_isaac.png
 
 clean:
 	find . -type f -name '*.class' -delete
