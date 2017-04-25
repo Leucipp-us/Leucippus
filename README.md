@@ -10,7 +10,7 @@ working. It is important that you have run ImageJ at least once before trying
 to install the plugin as the ImageJ plugin folder is not created until then.
 If you do not then you can find ImageJ available on many package managers.
 
-###Dependencies
+### Dependencies
 To build and run Leucippus you need the following software:
 
 - Git
@@ -23,7 +23,7 @@ To build and run Leucippus you need the following software:
 - jdk8 (javac 1.8)
 - ij.jar (ImageJ jar file)
 
-###Commands
+### Commands
 
 If you are using apt for your package manager you can easily install all of these
 using the command:
